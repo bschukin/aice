@@ -1,0 +1,34 @@
+{
+  "filter": {
+    "exp": {
+      "op": "OR",
+      "left": {
+        "exp": {
+          "op": "in",
+          "left": {
+            "field": "boss.gender.name"
+          },
+          "right": {
+            "value": "man"
+          }
+        }
+      },
+      "right": {
+        "exp": {
+          "op": "in",
+          "left": {
+            "field": "boss.gender.name"
+          },
+          "right": {
+            "value": [
+              "мужской",
+              "male",
+              "м",
+              "m"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

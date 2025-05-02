@@ -31,6 +31,8 @@ opik = "^0.2.2"
 ruff = "^0.4.9"
 pre-commit = "^3.7.1"
 pytest = "^8.2.2"
+pytest-asyncio = "^0.26.0"
+pymorphy2 = "^0.9.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -40,3 +42,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poe.tasks.test]
 cmd = "poetry run pytest tests/"
 env = { ENV_FILE = ".env.testing" }
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

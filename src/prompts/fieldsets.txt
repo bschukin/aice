@@ -1,0 +1,70 @@
+Текущие фиелдсеты:
+
+```kotlin
+object Department : MFS<Department>(caption = "Организация") {
+    val id = Field.id()
+    val name = Field.stringNN("name")
+    val parent = Field.referenceNN("parent", Department)
+    val childs = Field.list("departments", Department)
+    val employees = Field.list("employees", Person)
+    val boss = Field.reference("boss", Person)
+    val city = Field.reference("city", City)
+
+    init {
+        addOption(Tree(parent = parent, childs = childs))
+    }
+}
+
+object City : MFS<City>() {
+    val id = Field.id()
+    val title = Field.string("title")
+}
+
+object Person : MFS<Person>(Cached) {
+    val id = Field.id()
+    val name = Field.string("name")
+    val lastName = Field.string("lastName")
+    val age = Field.int("age")
+    val gender = Field.referenceNN("gender", Gender)
+    val sibling = Field.reference("sibling", Person)
+    val childs = Field.list("childs", Child)
+    val email = Field.string("email")
+    val city = Field.reference("city", City)
+    val bio = Field.clob("bio")
+    val photo = Field.blob("photo")
+    val favoriteGame = Field.reference("favoriteGame", Game)
+    val department = Field.referenceNN("department", Department)
+
+    override val nativeKey: List<Field<*, *>> by lazy{        listOf(Gender.name)
+    }}
+
+object Gender : MFS<Gender>("Пол") {
+    val id = Field.id()
+    val name = Field.string("name")
+    val isClassic = Field.boolean("isClassic")
+
+    override val nativeKey: List<Field<*, *>> by lazy{
+        listOf(name)
+    }
+}
+
+object Project : MFS<Project>(group = ProjectGroup) {
+    val name = Field.string("name"){caption = "Наименование проекта"}
+    val tasks = Field.list("tasks", Task){caption = "задачи в проекте"}
+}
+
+object Task : MFS<Task>() {
+    val name = Field.string("name"){caption = "Имя задачи"}
+    val checklists = Field.list("checklists", Check){caption = "Чеклист к задаче"}
+}
+
+
+object Check : MFS<Check>("Checklist") {
+    val id = Field.id()
+    val name = Field.string("name") {caption="Наименование проверки"}
+    val task = Field.reference("task", Task){caption="Наименование задачи"}
+}
+
+
+```
+=====================================
