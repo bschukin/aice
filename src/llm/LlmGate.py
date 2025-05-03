@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from openai import OpenAI
 
-openrouter_key = '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'
+openrouter_key = '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'
 bothub_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMjc0OTRlLWI1NTEtNGFjNy1iZTA0LTQ4NDEzMjdlZjZmMiIsImlzRGV2ZWxvcGVyIjp0cnVlLCJpYXQiOjE3NDQxNjg5MzksImV4cCI6MjA1OTc0NDkzOX0.N3aznEtLa9odiM4P0p5qhdZAU_QFfgu8Zox5sXDO7k8'
 
 

@@ -1,7 +1,6 @@
 import re
 import pytest
 from src.llm.LlmGate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324
-import asyncio
 
 def clean(s:str)->str:
     return (re.sub(r"[^a-zA-Z0-9а-яА-ЯёЁ]", "",s)
