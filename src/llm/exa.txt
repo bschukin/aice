@@ -1,0 +1,8 @@
+ [
+            {
+                "role": "system",
+                "content": "You are a research assistant. Analyze the request and provide relevant information.",
+            },
+            {"role": "user", "content": state["messages"][0].content},
+        ]
+    )
