@@ -4,7 +4,6 @@ from pathlib import Path
 def read_project_file(project:str, filename:str)->str:
     return read_file("data."+project, filename)
 
-
 def write_project_file(project:str, filename:str, text:str):
     write_file("data."+project, filename, text)
 
@@ -17,14 +16,21 @@ def read_file(package:str, filename:str)->str:
 
 
 def write_file(package_or_dir:str, filename:str, text:str):
-    root = get_project_root()
+    root = get_source_root()
     dir = root / package_or_dir.replace(".", "/")
     dir.mkdir(parents=True, exist_ok=True)
     output_file = dir / filename
     output_file.write_text(text, encoding="utf-8")
 
+def get_project_path(project:str)->Path:
+    pr = "data."+project
+    root = get_source_root()
+    dir = root / pr.replace(".", "/")
+    dir.mkdir(parents=True, exist_ok=True)
+    return dir
 
-def get_project_root() -> Path:
+
+def get_source_root() -> Path:
     """Возвращает абсолютный путь до корня проекта."""
     current_dir = Path(__file__).parent
     while True:

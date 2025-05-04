@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-openrouter_key = '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'
-bothub_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMjc0OTRlLWI1NTEtNGFjNy1iZTA0LTQ4NDEzMjdlZjZmMiIsImlzRGV2ZWxvcGVyIjp0cnVlLCJpYXQiOjE3NDQxNjg5MzksImV4cCI6MjA1OTc0NDkzOX0.N3aznEtLa9odiM4P0p5qhdZAU_QFfgu8Zox5sXDO7k8'
+load_dotenv()
+
+openrouter_key = os.getenv("OPENROUTER_API_KEY")
+bothub_key = os.getenv("BOTHUB_API_KEY")
 
 #648 184
 
@@ -17,6 +21,9 @@ class LlmGate():
 
     def __responce(self, resp:str)->str:
         return resp + " (@" +self.aliveModel.__class__.__name__ +")"
+
+    def promptNo(self, prompt: str, temperature: float = 0.0) -> str:
+        return self.prompt(prompt,temperature).rpartition('(')[0]
 
     def prompt(self, prompt: str, temperature: float = 0.0) -> str:
         # Сначала пробуем текущую живую модель

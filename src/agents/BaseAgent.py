@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from llm.LlmGate import LlmGate
+from llm.llmgate import LlmGate
 
 
 class BaseAgent(ABC):
