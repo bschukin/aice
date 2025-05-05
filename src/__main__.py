@@ -9,17 +9,20 @@ def main():
     #parser.add_argument('--save', help="Сохранить историю чата в файл")
     #args = parser.parse_args()
 
-    m = Manager()
+    manager = Manager()
+    manager.reset_state()
 
     while True:
         user_input = get_user_input()
 
         if user_input.lower() in ['e', 'exit', 'quit', 'q']:
+            manager.dump_state()
             break
 
-        print(m.chat(user_input))
+        print(manager.chat(user_input))
 
-def get_user_input(prompt="aice>> "):
+
+def get_user_input(prompt="aice>>"):
     return input(prompt)
 
 if __name__ == "__main__":

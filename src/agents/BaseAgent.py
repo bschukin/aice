@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 from llm.llmgate import LlmGate
+from llm.message_history import MessageHistory
 
 
 class BaseAgent(ABC):
     __gate = LlmGate()
 
-    def __init__(self, role: str, name: str):
+    def __init__(self, role: str, name: str, project:str='default'):
         self._role = role  # Защищенное поле (по соглашению)
         self._name = name
+        self._project = project
+        self._history = MessageHistory(project, role)
+        self._history.load_from_file()
 
     @property
     def role(self) -> str:
@@ -19,10 +23,15 @@ class BaseAgent(ABC):
         """Метод для получения имени"""
         return self._name
 
-    @abstractmethod
-    def do_something(self):
-        """Абстрактный метод, который должен быть реализован в дочерних классах"""
-        pass
+    def dump_state(self):
+        self._history.dump_to_file()
 
-    def chat(cls, prompt:str, temperature = 0.0)->str:
-        return cls.__gate.prompt(prompt, temperature)
+    def reset_state(self):
+        self._history.delete_all_history()
+
+    def chat(self, prompt:str, temperature = 0.0)->str:
+
+        resp =  self.__gate.prompt(prompt, temperature)
+        self._history.add_message("user", prompt)
+        self._history.add_message("assistant", resp)
+        return resp

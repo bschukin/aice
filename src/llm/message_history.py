@@ -1,13 +1,16 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 from utils.FileUtils import get_project_path
+from utils.strings import substring_after,substring_before
 
 
 class MessageHistory:
     """
       Отвечает за хранение истории сообщений
+      todo: пока храним полную историю в чате. в будущем можно разбивать на куски
     """
 
     messages = []
@@ -15,16 +18,22 @@ class MessageHistory:
     def __init__(self, project: str, agent_name: str):
         self.project = project
         self.project_dir = get_project_path(project)
-        self.agent_name = agent_name
+        self.agent_role = agent_name
         self.filename = self.__get_history_file_name()
 
     def add_message(self, role, content):
         """Добавляет сообщение с автоматической датой и временем"""
+        text = substring_before(content, "(@")
+        model = substring_after(content, "(@")
         message = {
             'role': role,
-            'content': content,
+            'content': text,
             'timestamp': datetime.now().isoformat(),  # ISO-формат даты-времени
         }
+
+        if model!= '':
+            message['model'] = model[0:-1]
+
         self.messages.append(message)
 
     def get_full_messages(self) -> list[dict]:
@@ -47,12 +56,16 @@ class MessageHistory:
 
 
     def load_from_file(self):
+        if not Path(self.filename).exists():
+            return
         with open(self.filename) as f:
             self.messages = json.load(f)
 
     def delete_all_history(self):
         self.messages = []
+        if not Path(self.filename).exists():
+            return
         os.remove(self.filename)
 
     def __get_history_file_name(self):
-        return self.project_dir / (self.agent_name + ".chat.history.json")
+        return self.project_dir / (self.agent_role + ".chat.history.json")
