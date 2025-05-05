@@ -5,6 +5,7 @@ from pathlib import Path
 
 from utils.FileUtils import get_project_path
 from utils.strings import substring_after,substring_before
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 
 
 class MessageHistory:
@@ -50,9 +51,21 @@ class MessageHistory:
             for msg in self.messages
         ]
 
+    def get_prepared_messages_lang_chain(self) -> list[BaseMessage]:
+        """Возвращает сообщения в формате для LLM (без служебных полей)"""
+        langchain_messages = []
+        for msg in self.messages:
+            if msg["role"] == "user":
+                langchain_messages.append(HumanMessage(content=msg["content"]))
+            elif msg["role"] == "assistant":
+                langchain_messages.append(AIMessage(content=msg["content"]))
+            elif msg["role"] == "system":
+                langchain_messages.append(SystemMessage(content=msg["content"]))
+        return langchain_messages
+
     def dump_to_file(self):
-        with open(self.filename, 'w') as f:
-            json.dump(self.messages, f, indent=1)
+        with open(self.filename, 'w',  encoding="utf-8") as f:
+            json.dump(self.messages, f, ensure_ascii=False, indent=1)
 
 
     def load_from_file(self):

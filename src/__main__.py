@@ -10,14 +10,18 @@ def main():
     #args = parser.parse_args()
 
     manager = Manager()
-    manager.reset_state()
+    #manager.reset_state()
 
     while True:
         user_input = get_user_input()
 
-        if user_input.lower() in ['e', 'exit', 'quit', 'q']:
+        if user_input.lower() in ['e', 'exit', 'quit', 'q', 'й']:
             manager.dump_state()
             break
+
+        if user_input.lower() in ['0', 'o']:
+            manager.reset_state()
+            continue
 
         print(manager.chat(user_input))
 

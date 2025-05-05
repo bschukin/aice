@@ -1,8 +1,8 @@
 import re
 import pytest
 
-from llm.llmgate import Ollama8b
-from src.llm.llmgate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324Free
+from llm.llm_gate import Ollama8b
+from src.llm.llm_gate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324Free
 
 def clean(s:str)->str:
     return (re.sub(r"[^a-zA-Z0-9а-яА-ЯёЁ]", "",s)

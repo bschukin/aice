@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from openai import OpenAI
 from langchain_ollama.chat_models import  ChatOllama
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, BaseMessage, AIMessage, SystemMessage
 from dotenv import load_dotenv
 import os
 
@@ -33,7 +33,7 @@ class LlmGate():
         self.models = []
         self.models.append(Ollama8b())
         #self.models.append(OpenRouterDeepseekChatV30324())
-        self.models.append(BotHubDeepseekChatV30324Free())
+        #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
 
     def __responce(self, resp: str) -> str:
@@ -74,7 +74,7 @@ class LLmWithOpenAiApi(LLM):
             base_url=url)
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
-        messages = [{'role': 'user', 'content': prompt}] + (prev_messages if prev_messages is not None else [])
+        messages = (prev_messages if prev_messages is not None else []) + [{'role': 'user', 'content': prompt}]
 
         chat_completion = self.client.chat.completions.create(
             messages=messages,
@@ -85,11 +85,9 @@ class LLmWithOpenAiApi(LLM):
             if chat_completion.model_extra.get("error") is not None:
                 raise Exception(chat_completion.model_extra["error"]["message"])
         if chat_completion.choices is None:
-            print()
+            raise Exception("No choices")
         res = chat_completion.choices[0].message.content
-        if res=='':
-            print()
-        return chat_completion.choices[0].message.content
+        return res
 
     async def aprompt(self, text: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         return self.prompt(text, prev_messages, temperature)
@@ -102,14 +100,28 @@ class OllamaBased(LLM):
         self.client = ChatOllama(model=model, temperature=0, )
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
-        messages = [{'role': 'user', 'content': prompt}] + (prev_messages if prev_messages is not None else [])
+        history = self.__get_prepared_messages_lang_chain(prev_messages)
 
-        prompt = [HumanMessage(prompt)]
+        prompt =  history + [HumanMessage(prompt)]
         response = self.client.invoke(prompt)
         return response.content
 
     async def aprompt(self, text: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         return self.prompt(text, prev_messages, temperature)
+
+    def __get_prepared_messages_lang_chain(self, prev_messages: list | None) -> list[BaseMessage]:
+        """Возвращает сообщения в формате для LLM (без служебных полей)"""
+        langchain_messages = []
+        if prev_messages is None:
+            return langchain_messages
+        for msg in prev_messages:
+            if msg["role"] == "user":
+                langchain_messages.append(HumanMessage(content=msg["content"]))
+            elif msg["role"] == "assistant":
+                langchain_messages.append(AIMessage(content=msg["content"]))
+            elif msg["role"] == "system":
+                langchain_messages.append(SystemMessage(content=msg["content"]))
+        return langchain_messages
 
 class Ollama8b(OllamaBased):
     def __init__(self):
