@@ -1,3 +1,4 @@
+print("0000000000000")
 import re
 import pytest
 
@@ -29,7 +30,7 @@ def test_LlmGate():
 
 @pytest.mark.asyncio
 async def test_Async():
-    chat = OpenRouterDeepseekChatV30324()
+    chat = Ollama8b()
     resp = await chat.aprompt(test_prompt)
     print(resp)
     assert clean(resp) == clean('Hello, world!')

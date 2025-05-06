@@ -1,5 +1,5 @@
-from src.utils.FileUtils import write_file, read_file, write_project_file, read_project_file
-from src.llm.message_history import MessageHistory
+from src.utils.file_io import write_file, read_file, write_project_file, read_project_file
+from agents.message_history import MessageHistory
 
 def test_fileutils_rw():
     text = "Hello, worldina"

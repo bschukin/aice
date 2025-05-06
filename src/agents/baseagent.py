@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from llm.llm_gate import LlmGate
-from llm.message_history import MessageHistory
+from agents.message_history import MessageHistory
 
 
 class BaseAgent(ABC):
@@ -31,7 +31,9 @@ class BaseAgent(ABC):
 
     def chat(self, prompt:str, temperature = 0.0)->str:
 
-        resp =  self.__gate.prompt(prompt, self._history.get_prepared_messages(), temperature)
+        messages = self._history.get_prepared_messages() + [{'role': 'user', 'content': prompt}]
+
+        resp =  self.__gate.request(messages, temperature)
         self._history.add_message("user", prompt)
         self._history.add_message("assistant", resp)
         return resp

@@ -1,4 +1,7 @@
 
+def elvis(value, default):
+    return value if value is not None else default
+
 def substring_before(s, delimiter):
     """Аналог Kotlin's subStringBefore()"""
     index = s.find(delimiter)

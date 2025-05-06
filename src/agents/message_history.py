@@ -1,10 +1,9 @@
 import json
 import os
 from datetime import datetime
-from pathlib import Path
 
-from utils.FileUtils import get_project_path
-from utils.strings import substring_after,substring_before
+from paths import Paths
+from utils.sugar import substring_after,substring_before
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 
 
@@ -18,9 +17,8 @@ class MessageHistory:
 
     def __init__(self, project: str, agent_name: str):
         self.project = project
-        self.project_dir = get_project_path(project)
-        self.agent_role = agent_name
-        self.filename = self.__get_history_file_name()
+        self.agent = agent_name
+        self.history_file = Paths().get_agent_history_file(self.project, self.agent)
 
     def add_message(self, role, content):
         """Добавляет сообщение с автоматической датой и временем"""
@@ -36,6 +34,10 @@ class MessageHistory:
             message['model'] = model[0:-1]
 
         self.messages.append(message)
+
+    def get_length(self) -> int:
+        """Возвращает полные сообщения со всеми метаданными"""
+        return len(self.messages)
 
     def get_full_messages(self) -> list[dict]:
         """Возвращает полные сообщения со всеми метаданными"""
@@ -64,21 +66,18 @@ class MessageHistory:
         return langchain_messages
 
     def dump_to_file(self):
-        with open(self.filename, 'w',  encoding="utf-8") as f:
+        with open(self.history_file, 'w',  encoding="utf-8") as f:
             json.dump(self.messages, f, ensure_ascii=False, indent=1)
 
 
     def load_from_file(self):
-        if not Path(self.filename).exists():
+        if not self.history_file.exists():
             return
-        with open(self.filename) as f:
+        with open(self.history_file) as f:
             self.messages = json.load(f)
 
     def delete_all_history(self):
         self.messages = []
-        if not Path(self.filename).exists():
+        if not self.history_file.exists():
             return
-        os.remove(self.filename)
-
-    def __get_history_file_name(self):
-        return self.project_dir / (self.agent_role + ".chat.history.json")
+        os.remove(self.history_file)

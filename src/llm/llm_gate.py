@@ -25,6 +25,10 @@ class LLM(ABC):
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         pass
 
+    @abstractmethod
+    def request(self, messages: list, temperature: float = 0.0) -> str:
+        pass
+
 class LlmGate():
 
     _aliveModel: LLM | None = None
@@ -43,10 +47,14 @@ class LlmGate():
         return self.prompt(prompt, prev_messages, temperature).rpartition('(@')[0]
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
+        messages = (prev_messages if prev_messages is not None else []) + [{'role': 'user', 'content': prompt}]
+        return self.request(messages, temperature)
+
+    def request(self, messages: list, temperature: float = 0.0) -> str:
         # Сначала пробуем текущую живую модель
         if self._aliveModel is not None:
             try:
-                response = self._aliveModel.prompt(prompt, prev_messages, temperature)
+                response = self._aliveModel.request(messages, temperature)
                 return self.__responce(response)
             except Exception:
                 pass  # Продолжаем поиск рабочей модели
@@ -54,7 +62,7 @@ class LlmGate():
         # Если живая модель не сработала, ищем первую рабочую среди всех
         for model in self.models:
             try:
-                response = model.prompt(prompt, prev_messages, temperature)
+                response = model.request(messages, temperature)
                 self._aliveModel = model  # Запоминаем рабочую модель
                 return self.__responce(response)
             except Exception as e:
@@ -76,6 +84,9 @@ class LLmWithOpenAiApi(LLM):
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         messages = (prev_messages if prev_messages is not None else []) + [{'role': 'user', 'content': prompt}]
 
+        return self.request(messages, temperature)
+
+    def request(self, messages: list, temperature: float = 0.0) -> str:
         chat_completion = self.client.chat.completions.create(
             messages=messages,
             model=self.model,
@@ -100,16 +111,19 @@ class OllamaBased(LLM):
         self.client = ChatOllama(model=model, temperature=0, )
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
-        history = self.__get_prepared_messages_lang_chain(prev_messages)
+        messages =  (prev_messages if prev_messages is not None else [])  + [{'role': 'user', 'content': prompt}]
+        return self.request(messages, temperature)
 
-        prompt =  history + [HumanMessage(prompt)]
-        response = self.client.invoke(prompt)
+    def request(self, messages: list, temperature: float = 0.0) -> str:
+        msgs = self.__build_messages_langchain(messages)
+        response = self.client.invoke(msgs)
         return response.content
 
     async def aprompt(self, text: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         return self.prompt(text, prev_messages, temperature)
 
-    def __get_prepared_messages_lang_chain(self, prev_messages: list | None) -> list[BaseMessage]:
+    @staticmethod
+    def __build_messages_langchain(prev_messages: list | None) -> list[BaseMessage]:
         """Возвращает сообщения в формате для LLM (без служебных полей)"""
         langchain_messages = []
         if prev_messages is None:
@@ -129,20 +143,20 @@ class Ollama8b(OllamaBased):
 
 class OpenRouterDeepseekChatV30324(LLmWithOpenAiApi):
     def __init__(self):
-        super().__init__(openrouter_key,
+        super().__init__(os.getenv("OPENROUTER_API_KEY"),
                          "https://openrouter.ai/api/v1",
                          "deepseek/deepseek-chat-v3-0324:free")
 
 
 class BotHubDeepseekChatV30324Free(LLmWithOpenAiApi):
     def __init__(self):
-        super().__init__(bothub_key,
+        super().__init__(os.getenv("BOTHUB_API_KEY"),
                          "https://bothub.chat/api/v2/openai/v1",
                          "deepseek-chat-v3-0324:free")
 
 
 class BotHubDeepseekChatV30324(LLmWithOpenAiApi):
     def __init__(self):
-        super().__init__(bothub_key,
+        super().__init__(os.getenv("BOTHUB_API_KEY"),
                          "https://bothub.chat/api/v2/openai/v1",
                          "deepseek-chat-v3-0324")

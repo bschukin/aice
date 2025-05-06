@@ -1,5 +1,5 @@
-from src.agents.Manager import Manager
-from src.agents.Architect import Architect
+from src.agents.manager import Manager
+from src.agents.architect import Architect
 
 
 def test_000_whoamai():
