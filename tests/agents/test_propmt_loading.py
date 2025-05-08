@@ -1,5 +1,16 @@
 from paths import Paths
 from src.agents.system_prompt import SystemPrompt
+from utils.md import print_markdown
+
+
+def test_load_system_prompt_including_common_part():
+    print()
+    """
+    тест на загрузку системного промпта c включением отдельных общих для команды частей промпта
+    """
+
+    sp = SystemPrompt(agent_name="manager2", project="test01")
+    print_markdown(sp.get_agent_prompt())
 
 def test_load_system_prompt():
     print()

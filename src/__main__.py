@@ -1,5 +1,6 @@
 import argparse
 
+from agents.analyst import Analyst
 from agents.manager import Manager
 
 
@@ -9,8 +10,10 @@ def main():
     #parser.add_argument('--save', help="Сохранить историю чата в файл")
     #args = parser.parse_args()
 
-    manager = Manager(project="my_console")
-    print(f">>> session started with [{manager._history.get_length()}] history messages")
+    manager = Analyst(project="starter")
+    print(f">>> session started with:")
+    print(f">>> \t\tthe agent role [{manager.role}]. prompt loaded from [{manager._prompt._used_prompt}]")
+    print(f">>> \t\t[{manager._history.get_length()}] history messages")
 
     while True:
         user_input = get_user_input()
@@ -26,7 +29,7 @@ def main():
         if user_input.lower() in ['1']:
             manager.dump_state()
             continue
-
+        print("...")
         print(manager.chat(user_input))
 
 

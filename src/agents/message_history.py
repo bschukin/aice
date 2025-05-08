@@ -19,6 +19,7 @@ class MessageHistory:
         self.project = project
         self.agent = agent_name
         self.history_file = Paths().get_agent_history_file(self.project, self.agent)
+        self.load_from_file()
 
     def add_message(self, role, content):
         """Добавляет сообщение с автоматической датой и временем"""

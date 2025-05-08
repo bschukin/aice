@@ -10,7 +10,7 @@ env_var_path_data = "path.data"
 env_var_path_prompts = "path.agents.prompts"
 env_var_path_prompts_default = "src.agents.prompts"
 agent_history_file_suffix = ".chat.history.json"
-agent_propmt_file_suffix = ".prompt.txt"
+agent_propmt_file_suffix = ".prompt.md"
 
 
 class Paths:
