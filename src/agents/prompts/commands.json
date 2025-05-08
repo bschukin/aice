@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "actionType": "PRD-update",
+      "to": "architect"
+    },
+    {
+      "actionType": "architecture",
+      "artifact": "PRD",
+      "to": "architect"
+    }
+  ]
+}
