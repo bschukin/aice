@@ -22,6 +22,7 @@ jinja2 = "^3.1.4"
 tiktoken = "^0.7.0"
 fake-useragent = "^1.5.1"
 
+loguru="^0.7.0"
 
 # Inference
 fastapi = ">=0.100,<=0.110"
@@ -48,3 +49,11 @@ env = { ENV_FILE = ".env.testing" }
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.loguru]
+level = "INFO"
+
+[[tool.loguru.handlers]]
+sink = "stdout"
+format = "{time:HH:mm:ss}|{level:<8}|{message}"
+level = "INFO"

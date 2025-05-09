@@ -21,6 +21,5 @@ def test_chathistory_rw():
     cs.dump_to_file()
 
     cs2 = MessageHistory("project1", "manager")
-    cs2.load_from_file()
     print(cs2.get_full_messages())
     assert(len(cs2.messages)==2)

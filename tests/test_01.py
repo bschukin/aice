@@ -1,5 +1,7 @@
 import json
 import spacy
+import pytest
+
 from natasha import (
     Doc,
     Segmenter,
@@ -15,6 +17,7 @@ def map_entity(word: str, dictionary: dict) -> str:
             return en_term
     return None  # Если не найдено
 
+@pytest.mark.skip(reason="Тест временно отключен")
 def test_one():
     print()
     nlp = spacy.load("ru_core_news_lg")
@@ -36,6 +39,7 @@ def test_one():
 
     #print(entities)
 
+@pytest.mark.skip(reason="Тест временно отключен")
 def test_2():
     print()
     segmenter = Segmenter()

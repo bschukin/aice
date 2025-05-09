@@ -13,13 +13,11 @@ class MessageHistory:
       todo: пока храним полную историю в чате. в будущем можно разбивать на куски
     """
 
-    messages = []
-
     def __init__(self, project: str, agent_name: str):
         self.project = project
         self.agent = agent_name
         self.history_file = Paths().get_agent_history_file(self.project, self.agent)
-        self.load_from_file()
+        self.messages = self.__load_from_file()
 
     def add_message(self, role, content):
         """Добавляет сообщение с автоматической датой и временем"""
@@ -71,11 +69,11 @@ class MessageHistory:
             json.dump(self.messages, f, ensure_ascii=False, indent=1)
 
 
-    def load_from_file(self):
+    def __load_from_file(self)->[]:
         if not self.history_file.exists():
-            return
+            return []
         with open(self.history_file) as f:
-            self.messages = json.load(f)
+            return json.load(f)
 
     def delete_all_history(self):
         self.messages = []

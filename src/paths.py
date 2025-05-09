@@ -60,6 +60,10 @@ class Paths:
         return  agent + agent_propmt_file_suffix
 
     @staticmethod
+    def get_file_from_root(path_to_file:str) -> Path:
+        return Paths.get_source_root() / path_to_file
+
+    @staticmethod
     def get_source_root() -> Path:
         """Возвращает абсолютный путь до корня проекта."""
         current_dir = Path(__file__).parent
