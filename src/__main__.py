@@ -10,27 +10,27 @@ def main():
     #parser.add_argument('--save', help="Сохранить историю чата в файл")
     #args = parser.parse_args()
 
-    manager = Analyst(project="starter")
+    agent = Analyst(project="starter")
     print(f">>> session started with:")
-    print(f">>> \t\tthe agent role [{manager.role}]. prompt loaded from [{manager._prompt._used_prompt}]")
-    print(f">>> \t\t[{manager._history.get_length()}] history messages")
+    print(f">>> \t\tthe agent role [{agent.role}]")
+    print(f">>> \t\t[{agent._history.get_length()}] history messages")
 
     while True:
         user_input = get_user_input()
 
         if user_input.lower() in ['e', 'exit', 'quit', 'q', 'й']:
-            manager.dump_state()
+            agent.dump_state()
             break
 
         if user_input.lower() in ['0', 'o']:
-            manager.reset_state()
+            agent.reset_state()
             continue
 
         if user_input.lower() in ['1']:
-            manager.dump_state()
+            agent.dump_state()
             continue
         print("...")
-        print(manager.chat(user_input))
+        print(agent.chat(user_input))
 
 
 def get_user_input(prompt="aice>>"):

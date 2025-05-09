@@ -1,9 +1,9 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from agents.system_prompt import SystemPrompt
 from llm.llm_gate import LlmGate
 from agents.message_history import MessageHistory
-
+from src.utils.sugar import substring_before
 
 class BaseAgent(ABC):
     __gate = LlmGate()
@@ -31,8 +31,12 @@ class BaseAgent(ABC):
     def reset_state(self):
         self._history.delete_all_history()
 
+    @abstractmethod
+    def _get_system_prompt(self) -> list[dict[str, str]]:
+        return []
+
     def chat(self, prompt: str, temperature=0.0) -> str:
-        messages = ([{'role': 'system', 'content': self._prompt.get_agent_prompt()}]
+        messages = (self._get_system_prompt()
                     + self._history.get_prepared_messages()
                     + [{'role': 'user', 'content': prompt}])
 
@@ -40,3 +44,8 @@ class BaseAgent(ABC):
         self._history.add_message("user", prompt)
         self._history.add_message("assistant", resp)
         return resp
+
+    def _parse_agent_response(self, responce):
+        humanresp = substring_before(responce, "##Artifact")
+
+

@@ -10,7 +10,7 @@ def test_load_system_prompt_including_common_part():
     """
 
     sp = SystemPrompt(agent_name="manager2", project="test01")
-    print_markdown(sp.get_agent_prompt())
+    print_markdown(sp.agent_prompt)
 
 def test_load_system_prompt():
     print()
@@ -25,7 +25,11 @@ def test_load_system_prompt():
 
 
     sp = SystemPrompt(agent_name="namager", project="test01")
-    assert sp.get_agent_prompt()=="Ты - сообразительный и остроумный ассистент-помощник"
+    assert sp.agent_prompt=="Ты - сообразительный и остроумный ассистент-помощник"
 
     sp = SystemPrompt(agent_name="manager", project="test01")
-    assert sp.get_agent_prompt() == "Ты - сообразительный и остроумный ассистент-дурак"
+    assert sp.agent_prompt == "Ты - сообразительный и остроумный ассистент-дурак"
+
+    assert sp.prd_schema is not None
+    assert sp.responce_format is not None
+    print_markdown(sp.responce_format)
