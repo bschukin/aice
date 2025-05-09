@@ -11,18 +11,21 @@ from natasha import (
     NewsSyntaxParser
 )
 
+from paths import Paths
+
+
 def map_entity(word: str, dictionary: dict) -> str:
     for en_term, ru_terms in dictionary.items():
         if word.lower() in ru_terms:
             return en_term
     return None  # Если не найдено
 
-@pytest.mark.skip(reason="Тест временно отключен")
+#@pytest.mark.skip(reason="Тест временно отключен")
 def test_one():
     print()
     nlp = spacy.load("ru_core_news_lg")
 
-    with open('entities.json', 'r', encoding='utf-8') as f:
+    with open(Paths().get_file_from_root('tests/experiments/entities.json'), 'r', encoding='utf-8') as f:
         entities_dict = json.load(f)
 
     text = "Открой договор, где сумма больше 100"
@@ -48,7 +51,7 @@ def test_2():
     morph_vocab = MorphVocab()  # Для лемматизации
     syntax_parser = NewsSyntaxParser(emb)  # Синтаксический парсер
 
-    with open('entities.json', 'r', encoding='utf-8') as f:
+    with open(Paths().get_file_from_root('tests/experiments/entities.json'), 'r', encoding='utf-8') as f:
         entities_dict = json.load(f)
 
     text = "Пользователи, с именем на А"
