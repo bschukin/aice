@@ -34,9 +34,10 @@ class BaseAgent(ABC):
     def reset_state(self):
         self._history.delete_all_history()
 
-    @abstractmethod
+
     def _get_system_prompt(self) -> list[dict[str, str]]:
-        return []
+        agent_prompt = {'role': 'system', 'content': self._prompt.agent_prompt}
+        return [agent_prompt]
 
     def chat(self, prompt: str, temperature=0.0) -> str:
         messages = (self._get_system_prompt()

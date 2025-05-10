@@ -39,7 +39,7 @@ class Paths:
         pr = cls.get_rel_path_in_project_artifacts_dir(project, path_inside_project_dir)
         root = Paths.get_source_root()
         dir = root / pr.replace(".", "/")
-        dir.mkdir(parents=True, exist_ok=True)
+        #dir.mkdir(parents=True, exist_ok=True)
         return dir
 
     def project_artifact_exists(cls, project: str, path_inside_project_dir: str = None, artifact: str = None) -> bool:
