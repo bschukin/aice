@@ -90,7 +90,8 @@ class LLmWithOpenAiApi(LLM):
         chat_completion = self.client.chat.completions.create(
             messages=messages,
             model=self.model,
-            temperature=temperature
+            temperature=temperature,
+            response_format={"type": "json_object"}
         )
         if chat_completion.model_extra is not None:
             if chat_completion.model_extra.get("error") is not None:

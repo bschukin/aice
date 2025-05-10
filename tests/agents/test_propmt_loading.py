@@ -31,5 +31,5 @@ def test_load_system_prompt():
     assert sp.agent_prompt == "Ты - сообразительный и остроумный ассистент-дурак"
 
     assert sp.prd_schema is not None
-    assert sp.responce_format is not None
-    print_markdown(sp.responce_format)
+    assert sp.response_schema is not None
+    print_markdown(sp.response_schema)

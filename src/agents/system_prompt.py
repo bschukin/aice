@@ -21,8 +21,12 @@ class SystemPrompt:
         self._agent = agent_name
 
         self.agent_prompt = self.__get_agent_prompt()
-        self.prd_schema = SystemPrompt.load_statement_file(project, "PRD.py") + "\r\n" + SystemPrompt.load_statement_file(project, "PRD.example.json")
-        self.responce_format = SystemPrompt.load_statement_file(project, "command-language.md")
+        self.prd_schema = (SystemPrompt.load_statement_file(project, "PRD_schema.py")
+                           + "\r\n" + SystemPrompt.load_statement_file(project, "PRD.example.json"))
+        self.response_schema = (SystemPrompt.load_statement_file(project, "commands_schema.py")
+                            + "\r\n" + SystemPrompt.load_statement_file(project, "commands.example01.md")
+                            + "\r\n" + SystemPrompt.load_statement_file(project, "commands.example01.json"))
+
         #print_markdown(self.prd_schema)
 
     def __get_agent_prompt(self)->str:
