@@ -1,9 +1,12 @@
+import json
 from abc import ABC, abstractmethod
 
+from agents.prompts.commands_schema import AgentResponse
 from agents.system_prompt import SystemPrompt
 from llm.llm_gate import LlmGate
 from agents.message_history import MessageHistory
-from src.utils.sugar import substring_before
+from src.utils.sugar import substring_before, substring_after, substring_before_last
+
 
 class BaseAgent(ABC):
     __gate = LlmGate()
@@ -41,11 +44,19 @@ class BaseAgent(ABC):
                     + [{'role': 'user', 'content': prompt}])
 
         resp = self.__gate.request(messages, temperature)
+        #self.__parse_agent_response(resp)
         self._history.add_message("user", prompt)
         self._history.add_message("assistant", resp)
         return resp
 
-    def _parse_agent_response(self, responce):
-        humanresp = substring_before(responce, "##Artifact")
+    def __parse_agent_response(self, json_data):
+        cleanead = self.__extract_json(json_data)
+        print(cleanead)
+        data_dict = json.loads(cleanead)
+        ar = AgentResponse.model_validate(data_dict)
+        print(ar)
 
-
+    def __extract_json(self, json_data) -> str:
+        s = substring_after(json_data, "{", save_delimiter=True)
+        s = substring_before_last(s, "}", save_delimiter=True)
+        return s

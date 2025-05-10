@@ -27,7 +27,6 @@ class SystemPrompt:
                             + "\r\n" + SystemPrompt.load_statement_file(project, "commands.example01.md")
                             + "\r\n" + SystemPrompt.load_statement_file(project, "commands.example01.json"))
 
-        #print_markdown(self.prd_schema)
 
     def __get_agent_prompt(self)->str:
 

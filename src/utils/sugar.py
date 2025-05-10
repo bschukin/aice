@@ -7,7 +7,40 @@ def substring_before(s, delimiter):
     index = s.find(delimiter)
     return s[:index] if index != -1 else s
 
-def substring_after(s, delimiter):
-    """Аналог Kotlin's subStringAfter()"""
+
+def substring_after(s: str, delimiter: str, save_delimiter: bool = False) -> str:
+    """Аналог Kotlin's subStringAfter() с дополнительной опцией сохранения разделителя.
+
+    Args:
+        s: Исходная строка
+        delimiter: Разделитель
+        save_delimiter: Если True, разделитель сохраняется в результате
+
+    Returns:
+        Подстрока после первого вхождения разделителя (включая сам разделитель, если save_delimiter=True)
+        Пустая строка, если разделитель не найден
+    """
     index = s.find(delimiter)
-    return s[index + len(delimiter):] if index != -1 else ""
+    if index == -1:
+        return ""
+
+    return s[index:] if save_delimiter else s[index + len(delimiter):]
+
+
+def substring_before_last(s: str, delimiter: str, save_delimiter: bool = False) -> str:
+    """Аналог Kotlin's subStringBeforeLast() с возможностью сохранить разделитель.
+
+    Args:
+        s: Исходная строка
+        delimiter: Разделитель
+        save_delimiter: Если True, разделитель сохраняется в конце результата
+
+    Returns:
+        Подстрока до последнего вхождения разделителя (включая сам разделитель в конце, если save_delimiter=True)
+        Вся строка, если разделитель не найден
+    """
+    index = s.rfind(delimiter)
+    if index == -1:
+        return s
+
+    return s[:index + len(delimiter)] if save_delimiter else s[:index]

@@ -74,7 +74,7 @@ class Requirement(BaseModel):
     """"
     Требование
     """
-    code: str = Field(
+    code: Optional[str] = Field(
         description="Фасетный (составной) номер требования. Номер может быть составным, если создается иерархия")
     value:str = Field(description="Формулировка требования")
     dependent_reqs: Optional[List[Requirement]] = (
