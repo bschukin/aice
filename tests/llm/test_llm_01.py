@@ -2,16 +2,16 @@ print("0000000000000")
 import re
 import pytest
 
-from llm.llm_gate import Ollama8b
+from llm.llm_gate import Ollama8b, OpenRouterDeepseekChatV30324_2
 from src.llm.llm_gate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324Free
 
 def clean(s:str)->str:
     return (re.sub(r"[^a-zA-Z0-9а-яА-ЯёЁ]", "",s)
             .lower())
-test_prompt = "say 'hello, world'"
+test_prompt = "say exactly two words: 'hello, world'. check your response before sending it - it should contain only two words 'hello, world' "
 
 def test_OpenRouterDeepseekChatV30324():
-    chat = OpenRouterDeepseekChatV30324()
+    chat = OpenRouterDeepseekChatV30324_2()
     resp = chat.prompt(test_prompt)
     print(resp)
     assert clean(resp) == clean('Hello, world!')

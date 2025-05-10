@@ -37,6 +37,7 @@ class LlmGate():
         self.models = []
        # self.models.append(Ollama8b())
         self.models.append(OpenRouterDeepseekChatV30324())
+        self.models.append(OpenRouterDeepseekChatV30324_2())
         #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
 
@@ -145,6 +146,12 @@ class Ollama8b(OllamaBased):
 class OpenRouterDeepseekChatV30324(LLmWithOpenAiApi):
     def __init__(self):
         super().__init__(os.getenv("OPENROUTER_API_KEY"),
+                         "https://openrouter.ai/api/v1",
+                         "deepseek/deepseek-chat-v3-0324:free")
+
+class OpenRouterDeepseekChatV30324_2(LLmWithOpenAiApi):
+    def __init__(self):
+        super().__init__(os.getenv("OPENROUTER_API_KEY2"),
                          "https://openrouter.ai/api/v1",
                          "deepseek/deepseek-chat-v3-0324:free")
 

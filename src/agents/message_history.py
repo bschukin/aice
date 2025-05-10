@@ -65,6 +65,7 @@ class MessageHistory:
         return langchain_messages
 
     def dump_to_file(self):
+        self.history_file.parent.mkdir(parents=True, exist_ok=True)
         with open(self.history_file, 'w',  encoding="utf-8") as f:
             json.dump(self.messages, f, ensure_ascii=False, indent=1)
 
