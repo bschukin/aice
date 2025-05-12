@@ -1,21 +1,22 @@
 import json
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from agents.prompts.commands_schema import AgentResponse
 from agents.system_prompt import SystemPrompt
 from llm.llm_gate import LlmGate
 from agents.message_history import MessageHistory
-from src.utils.sugar import substring_before, substring_after, substring_before_last
+from src.utils.sugar import substring_after, substring_before_last
 
 
 class BaseAgent(ABC):
     __gate = LlmGate()
 
-    def __init__(self, role: str, name: str, project: str = 'default'):
+    def __init__(self, role: str, name: str, project: str = 'default', prompt_dir:str=None):
         self._role = role  # Защищенное поле (по соглашению)
         self._name = name
         self._project = project
-        self._prompt = SystemPrompt(role, project)
+        self._prompt_dir = prompt_dir
+        self._prompt = SystemPrompt(role, project, prompt_dir)
         self._history = MessageHistory(project, role)
 
     @property
@@ -46,8 +47,8 @@ class BaseAgent(ABC):
 
         resp = self.__gate.request(messages, temperature)
         #self.__parse_agent_response(resp)
-        self._history.add_message("user", prompt)
-        self._history.add_message("assistant", resp)
+        #self._history.add_message("user", prompt)
+        #self._history.add_message("assistant", resp)
         return resp
 
     def __parse_agent_response(self, json_data):
@@ -57,7 +58,8 @@ class BaseAgent(ABC):
         ar = AgentResponse.model_validate(data_dict)
         print(ar)
 
-    def __extract_json(self, json_data) -> str:
+    @staticmethod
+    def __extract_json(json_data) -> str:
         s = substring_after(json_data, "{", save_delimiter=True)
         s = substring_before_last(s, "}", save_delimiter=True)
         return s

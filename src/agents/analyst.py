@@ -9,8 +9,7 @@ class Analyst(BaseAgent):
     def _get_system_prompt(self) -> list[dict[str, str]]:
         nsb = """
                 **ВАЖНО: 
-                    Ответ дается только в формате JSON! (pydantic класс AgentResponse).
-    
+                    Ответ дается только в формате JSON! (pydantic класс AgentResponse). 
                 """
 
         agent_prompt = {'role': 'system', 'content': self._prompt.agent_prompt}

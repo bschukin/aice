@@ -16,9 +16,10 @@ class SystemPrompt:
     2. В основной промпт роли также добавляется командный промпт ("## О вашей команде") 
     3. Отдельный промпт о ведении документа PRD
     """
-    def __init__(self, agent_name: str, project: str):
+    def __init__(self, agent_name: str, project: str, prompt_dir:str=None):
         self._project = project
         self._agent = agent_name
+        self._prompt_dir = prompt_dir
 
         self.agent_prompt = self.__get_agent_prompt()
         self.prd_schema = (SystemPrompt.load_statement_file(project, "PRD_schema.py")
@@ -31,7 +32,7 @@ class SystemPrompt:
     def __get_agent_prompt(self)->str:
 
         #загружаем основной промпт
-        prompt = self.load_prompt(self._project, self._agent)
+        prompt = self.load_prompt(self._project, self._agent, prompt_dir=self._prompt_dir)
 
         # загружаем  промпт команды
         team_prompt  = self.load_prompt(self._project, "team", False)
@@ -41,10 +42,10 @@ class SystemPrompt:
 
 
     @staticmethod
-    def load_prompt(project, prompt_name, use_default_prompt=True)->str:
+    def load_prompt(project, prompt_name, use_default_prompt=True, prompt_dir:str=None)->str:
         filename = Paths().get_agent_prompt_file_name(prompt_name)
 
-        prompt = SystemPrompt.load_statement_file(project, filename)
+        prompt = SystemPrompt.load_statement_file(project, filename, prompt_dir)
 
         if prompt is None and use_default_prompt:
             prompt = "Ты - сообразительный и остроумный ассистент-помощник"
@@ -52,15 +53,23 @@ class SystemPrompt:
         return prompt
 
     @staticmethod
-    def load_statement_file(project, filename) -> str:
+    def load_statement_file(project, filename, prompt_dir:str=None) -> str:
 
+        #1е место для поиска - папка с проектом
         if Paths().project_artifact_exists(project, artifact=filename):
             prompt = read_project_file(project, filename)
             used_prompt = str(Paths().get_project_artifact(project, artifact=filename))
             logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
             return prompt
+        #1.5 место для поиска - prompt_dir
+        if prompt_dir is not None:
+            prompt = read_file(prompt_dir, filename)
+            used_prompt = prompt_dir + "." + filename
+            logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
+            return prompt
 
-        prompt = read_file(env_var_path_prompts_default, filename)
+        # 2е место для поиска - папка src/agents/prompts
+        prompt = read_file(Paths().agent_prompts, filename)
         used_prompt = env_var_path_prompts_default + "." + filename
         logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
 

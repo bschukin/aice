@@ -21,7 +21,7 @@ class Paths:
             cls._instance = super().__new__(cls, *args, **kwargs)
 
         cls.data_dir = elvis(os.getenv(env_var_path_data), "data")
-        cls.agent_prompts = elvis(os.getenv(env_var_path_prompts), "src.agents.prompts")
+        cls.agent_prompts = elvis(os.getenv(env_var_path_prompts), env_var_path_prompts_default)
 
         return cls._instance
 
