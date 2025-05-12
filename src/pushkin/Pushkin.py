@@ -18,11 +18,15 @@ class Pushkin(BaseAgent):
         self._response_schema = SystemPrompt.load_statement_file(project, "pushkin_commands_schema.py", prompt_dir =self._prompt_dir, )
 
     def _get_system_prompt(self) -> list[dict[str, str]]:
+        nsb0 = """
+        
+            Ты отвечаешь только в формате JSON.
+            
+        """
         std = read_project_file(self._project, get_project_file_latest(self._project, "STD", "md"))
         nsb = """
                 ================
-                **ВАЖНО**: 
-                    Ответ дается только в формате JSON! (pydantic класс PushkinResponse). 
+                **ВАЖНО**: Ответ дается только в формате JSON! (pydantic класс PushkinResponse). 
                 **NB: ЗАПРЕЩАЕТСЯ самостоятельно менять контент, который не менялся по запросу Руководителя.
                 То есть, содержимое документа в новой версии должно строго соответствовать содержимому в старой, за исключением
                 новых, измененных или удаленных пунктов.**
@@ -42,7 +46,8 @@ class Pushkin(BaseAgent):
             std}
 
         nb = {'role': 'system', 'content': nsb}
-        return [agent_prompt,  current_std, nb]
+        nb0 = {'role': 'system', 'content': nsb0}
+        return [nb0, agent_prompt,  current_std, nb]
 
     def parse_agent_response(self, json_data):
         try:

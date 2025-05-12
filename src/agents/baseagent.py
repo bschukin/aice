@@ -47,8 +47,9 @@ class BaseAgent(ABC):
 
         resp = self.__gate.request(messages, temperature)
         #self.__parse_agent_response(resp)
-        #self._history.add_message("user", prompt)
-        #self._history.add_message("assistant", resp)
+        self._history.add_message("user", prompt)
+        self._history.add_message("assistant", resp)
+        print("================")
         return resp
 
     def __parse_agent_response(self, json_data):
