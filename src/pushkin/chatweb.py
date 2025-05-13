@@ -3,7 +3,15 @@ from pathlib import Path
 import streamlit as st
 
 # Первая команда Streamlit
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide",  page_title="Пушкин Первый")
+st.markdown("""
+<style>
+h1 {
+    margin-top: 0px !important;
+    padding-top: 0px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Настройка путей
 project_root = Path(__file__).parent.parent.parent
@@ -20,6 +28,14 @@ pushkin = Pushkin()
 
 # Создаем две колонки (можно настроить соотношение)
 chat_col, doc_col = st.columns([4, 4], gap="medium")
+
+st.markdown("""
+<style>
+h3 {
+    font-size: 18px !important;  color: #808080 !important; 
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Левая колонка - чат
 with chat_col:
@@ -60,16 +76,31 @@ with doc_col:
 
     # Инициализация текста
     if "document_text" not in st.session_state:
-        st.session_state.document_text = "Редактируйте текст здесь..."
+        st.session_state.document_text = (
+            "## Заголовок\n\n"
+            "Это **жирный текст** и *курсив*.\n\n"
+            "```python\nprint('Hello, World!')\n```\n\n"
+            "- Список\n- Элементы"
+        )
 
-    # Уменьшенный редактор без лишних элементов
-    edited_text = st.text_area(
-        "Редактор",
-        st.session_state.document_text,
-        height=450,
-        label_visibility="collapsed",
-        key="doc_editor"
-    )
+    # Создаем вкладки
+    tab_edit, tab_preview = st.tabs(["Редактор", "Предпросмотр"])
 
-    if edited_text != st.session_state.document_text:
-        st.session_state.document_text = edited_text
+    # Вкладка редактора
+    with tab_edit:
+        edited_text = st.text_area(
+            "Редактор Markdown",
+            st.session_state.document_text,
+            height=400,
+            label_visibility="collapsed",
+            key="doc_editor"
+        )
+
+        # Сохраняем изменения
+        if edited_text != st.session_state.document_text:
+            st.session_state.document_text = edited_text
+
+    # Вкладка предпросмотра
+    with tab_preview:
+        st.markdown("**Результат:**")
+        st.markdown(st.session_state.document_text)  # Рендеринг Markdown
