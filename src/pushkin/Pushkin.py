@@ -3,11 +3,9 @@ from datetime import datetime
 
 from agents.baseagent import BaseAgent
 from agents.system_prompt import SystemPrompt
-from paths import Paths
 from pushkin.prompts.pushkin_commands_schema import PushkinResponse
 from utils.file_io import read_project_file, write_project_file, get_project_file_latest
-from utils.md import print_markdown
-from utils.sugar import substring_after, substring_before_last, elvis
+from utils.sugar import substring_after, substring_before_last
 
 
 class Pushkin(BaseAgent):
@@ -49,13 +47,13 @@ class Pushkin(BaseAgent):
         nb0 = {'role': 'system', 'content': nsb0}
         return [nb0, agent_prompt,  current_std, nb]
 
-    def parse_agent_response(self, json_data):
+    def _parse_agent_response(self, json_data)->str:
         try:
             cleanead = self.extract_json(json_data)
 
             data_dict = json.loads(cleanead)
             if data_dict is None:
-                return json_data
+                return json_data + "   @raw"
             pr = PushkinResponse.model_validate(data_dict)
 
             if pr.STD is not None:
@@ -63,7 +61,6 @@ class Pushkin(BaseAgent):
                 write_project_file(self._project, filename, pr.STD.text)
 
             return pr.for_human
-
 
         except Exception as e:  # 'as e' сохраняет исключение в переменную e
             print(f"Произошла ошибка: {e}")  # Печатаем ошибку

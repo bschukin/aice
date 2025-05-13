@@ -10,6 +10,7 @@ env_var_path_data = "path.data"
 env_var_path_prompts = "path.agents.prompts"
 env_var_path_prompts_default = "src.agents.prompts"
 agent_history_file_suffix = ".chat.history.json"
+agent_techhistory_file_suffix = ".chat.techhistory.json"
 agent_propmt_file_suffix = ".prompt.md"
 
 
@@ -54,6 +55,8 @@ class Paths:
 
     def get_agent_history_file(cls, project: str, agent:str) -> Path:
         return cls.get_project_artifact(project, artifact=agent + agent_history_file_suffix)
+    def get_agent_techhistory_file(cls, project: str, agent:str) -> Path:
+        return cls.get_project_artifact(project, artifact=agent + agent_techhistory_file_suffix)
 
     @staticmethod
     def get_agent_prompt_file_name(agent:str) -> str:

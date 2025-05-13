@@ -44,3 +44,9 @@ def substring_before_last(s: str, delimiter: str, save_delimiter: bool = False) 
         return s
 
     return s[:index + len(delimiter)] if save_delimiter else s[:index]
+
+
+def ends_with(s: str, suffix: str, ignore_case: bool = False) -> bool:
+    if ignore_case:
+        return s.lower().endswith(suffix.lower())
+    return s.endswith(suffix)

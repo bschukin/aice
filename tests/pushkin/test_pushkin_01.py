@@ -10,7 +10,7 @@ def test_pushkin_prompt():
     for item in prompt:
         print(item)
 
-    assert prompt[0]['content'].lower().__contains__("по имени Пушкин".lower())
+    assert prompt[1]['content'].lower().__contains__("по имени Пушкин".lower())
 
 def test_pushkin_chat():
     p = Pushkin()

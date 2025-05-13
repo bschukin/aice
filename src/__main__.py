@@ -33,8 +33,8 @@ def main():
             continue
         print("...")
         resp = pushkin.chat(user_input)
-        resp_parsed = pushkin.parse_agent_response(resp)
-        print_markdown(resp_parsed)
+        #resp_parsed = pushkin.parse_agent_response(resp)
+        print_markdown(resp)
 
 
 def get_user_input(prompt="aice>>"):

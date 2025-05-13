@@ -36,7 +36,7 @@ class LlmGate():
     def __init__(self):
         self.models = []
         ##self.models.append(Ollama8b())
-        #self.models.append(OpenRouterDeepseekChatV30324_2())
+        self.models.append(OpenRouterDeepseekChatV30324_2())
         self.models.append(OpenRouterDeepseekChatV30324())
         #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())

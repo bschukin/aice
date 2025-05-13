@@ -59,18 +59,18 @@ class SystemPrompt:
         if Paths().project_artifact_exists(project, artifact=filename):
             prompt = read_project_file(project, filename)
             used_prompt = str(Paths().get_project_artifact(project, artifact=filename))
-            logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
+            logger.trace(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
             return prompt
         #1.5 место для поиска - prompt_dir
         if prompt_dir is not None:
             prompt = read_file(prompt_dir, filename)
             used_prompt = prompt_dir + "." + filename
-            logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
+            logger.trace(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
             return prompt
 
         # 2е место для поиска - папка src/agents/prompts
         prompt = read_file(Paths().agent_prompts, filename)
         used_prompt = env_var_path_prompts_default + "." + filename
-        logger.info(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
+        logger.trace(f"project [{project}], statement file [{filename}]. using path to load: {used_prompt} ")
 
         return prompt
