@@ -1,71 +1,37 @@
-from __future__ import annotations
-
+# Пушкин — AI-ассистент руководителя (v2.0)
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
 
-# СХЕМА ОТВЕТА Пушкиным
 
-"""
-Модуль для описания формата ответов ИИ-агента Пушкина. 
-Описывает структурированную схему ответов на запросы Руководителя.
-Важно! Ответы даются в формате json в соответствии с классом PushkinResponse.
-
-Каждый ответ ИИ-агента должен решить две задачи:
-    - дать ответ в формате обычной человеческой речи.
-    - дать полную новую версию целевого артефакта    
-"""
+# --- Классы для инкрементных изменений ---
+class ChangeItem(BaseModel):
+    """Одно изменение в STD"""
+    type: Literal["add", "edit", "delete", "move"] = Field(..., description="Тип операции")
+    section: str = Field(..., description="Раздел (например, Долгосрочные/Среднесрочные/Постоянные)")
+    subsection: Optional[str] = Field(None, description="Подраздел (например 'Безопасная разработка')")
+    old_text: Optional[str] = Field(None, description="Исходный текст для замены/удаления")
+    new_text: Optional[str] = Field(None, description="Новый текст (для add/edit)")
 
 
+class ConflictAlert(BaseModel):
+    """Конфликт при изменении"""
+    description: str = Field(example="Пересечение сроков с задачей 'Реестр сервисов'")
+    suggested_solution: str = Field(example="Перенести на июль или уменьшить объем")
+
+
+# --- Основной формат ответа ---
 class PushkinResponse(BaseModel):
-    """
-        Структура ответа состоит из полей:
+    """Структура ответа с инкрементными изменениями"""
+    for_human: str = Field(default="Изменения сделаны!", description="Пояснение на естественном языке (Markdown)")
 
-            1. for_human. (Ответ для человека - обязательный раздел)
-            2. STD (strategic tasks document)
-            3. no_new_information (Новой информации для внесения изменений в артефакты от человека или ии-агента не поступило)
+    # Инкрементные изменения вместо полного STD
+    changes_made: Optional[List[ChangeItem]] = Field(None, description="Список примененных изменений")
+    conflicts: Optional[List[ConflictAlert]] = Field(None, description="Обнаруженные конфликты")
 
-           **for_human**
-                Ответ в диалоге "агент - человек",  предназначен для передачи в чат человеку.
-                Ответ выдается в формате MD (markdown), чтобы помечать важные нюансы или выделять логические разделы ответа.
-                Текст для человека может:
-                - содержать ответы на его вопросы и запросы - например выдать Руководителю текущее состояние STD или его разделов,
-                - сообщать информацию о произведенных изменениях в артефактах (если Заказчик просил сделать изменения в них)
-                - содержать вопросы, уточнения, предложения ии-агента для более точного решения поставленных задач
+    # Только для критичных изменений
+    requires_confirmation: bool = Field(False, description="Требует подтверждения пользователем")
 
-           **STD**
-            Новое состояние STD, если оно было изменено.
-            Важно: если Руководитель явно не просил изменить STD - значит и документ не меняется
-            и данное поле не заполняется (то есть STD = null), не тратим лишние токены !
+    # Полный STD передается ТОЛЬКО при явном запросе
+    full_std: Optional[str] = Field(None, description="Полный текст STD только если запрошено")
 
-        **no_new_information**
-        Если в результате последнего сообщения от человека не поступило информации, которая каким либо образом меняет
-        документы - списки задач - следует установить данное поле (no_new_information) в true.
-    """
-
-    for_human: str = Field(description="Ответ для человека, на обычном языке в формате MD")
-    STD:Optional[MdDocument] = Field(description=" Полная новая (или первая) версия документа Список стратегических задач", default=None)
-    no_new_information:Optional[bool] = Field(description="Флаг, устанавливается в true, если изменений в документах нет. Если False. - поле нужно не выводить в json")
-
-
-class MdDocument(BaseModel):
-    """
-       Project Requirements Document (Список требований к программному продукту, реализуемый в проекте)
-    """
-    last_change: datetime = Field(description="дата и время последнего изменения", default=datetime.now())
-    text: str = Field(description="текст документа в формате MD")
-
-
-"""
-    **Важно, если артефакт не изменился (например, STD) - не надо передавать его в ответе вообще (не трать токены).
-    то есть: 
-    pr = PushkinResponse()
-    pr.for_human = "Ответ для пользователя"
-    pr.STD = None
-    pr.no_new_information = True
-    **
-    Ответ должен отдаваться исключительно в JSON.
-    Проверь себя перед отправкой ответа!
-
-===============
-"""

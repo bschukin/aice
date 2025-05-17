@@ -1,4 +1,11 @@
 
+
+def iif(condition:bool, if_true, if_false):
+    if condition:
+        return if_true
+    else:
+        return if_false
+
 def elvis(value, default):
     return value if value is not None else default
 

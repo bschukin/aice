@@ -6,9 +6,21 @@ import streamlit as st
 st.set_page_config(layout="wide",  page_title="Пушкин Первый")
 st.markdown("""
 <style>
+.stApp {
+    margin-top: -2.5rem !important;
+}
+header {
+    height: 2rem !important;
+}
 h1 {
-    margin-top: 0px !important;
-    padding-top: 0px !important;
+    margin-top: -1.5rem !important;
+    padding-top: 0rem !important;
+    font-size: 2.2rem !important;
+    color: #555555 !important;
+    font-weight: 500 !important;
+}
+.stChatInput {
+    padding-top: 0.5rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -63,25 +75,21 @@ with chat_col:
 
         # Генерация ответа
         response = pushkin.chat(prompt)
+        pushkin.dump_state()
 #        resp_parsed = pushkin.parse_agent_response(response)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
         with chat_history:
             with st.chat_message("assistant"):
                 st.markdown(response)
-
+                st.session_state.document_text = pushkin.get_STD()
 # Правая колонка - документ
 with doc_col:
     st.subheader("Документ", divider="gray")
 
     # Инициализация текста
     if "document_text" not in st.session_state:
-        st.session_state.document_text = (
-            "## Заголовок\n\n"
-            "Это **жирный текст** и *курсив*.\n\n"
-            "```python\nprint('Hello, World!')\n```\n\n"
-            "- Список\n- Элементы"
-        )
+        st.session_state.document_text = pushkin.get_STD()
 
     # Создаем вкладки
     tab_edit, tab_preview = st.tabs(["Редактор", "Предпросмотр"])
@@ -102,5 +110,15 @@ with doc_col:
 
     # Вкладка предпросмотра
     with tab_preview:
-        st.markdown("**Результат:**")
-        st.markdown(st.session_state.document_text)  # Рендеринг Markdown
+        # Создаем контейнер с фиксированной высотой и скроллбаром
+        st.markdown(
+            f"""
+            <div style="height: 400px; overflow-y: auto; border: 1px solid #e1e4e8; border-radius: 0.25rem; padding: 0.5rem;">
+            {st.session_state.document_text}
+            """,
+            unsafe_allow_html=True
+        )
+
+        #st.markdown(st.session_state.document_text)  # Рендеринг Markdown
+
+        st.markdown("</div>", unsafe_allow_html=True)

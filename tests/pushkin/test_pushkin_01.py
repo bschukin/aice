@@ -1,6 +1,4 @@
 from pushkin.Pushkin import Pushkin
-from pushkin.prompts.pushkin_commands_schema import PushkinResponse
-from utils.md import print_markdown
 
 
 def test_pushkin_prompt():
