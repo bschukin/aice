@@ -102,54 +102,14 @@ with chat_col:
 
     # Кастомное поле ввода с многострочной поддержкой
     with st.form(key="chat_input_form", clear_on_submit=True):
-        # Добавляем контейнер для выравнивания
-        cols = st.columns([1, 0.1])  # Первая колонка - поле ввода, вторая - кнопка
-
-        with cols[0]:
-            custom_input = st.text_area(
-                "Введите запрос...",
-                key="custom_chat_input",
-                height=75,
-                label_visibility="collapsed",
-                help="Нажмите Ctrl+Enter для отправки"
-            )
-
-        with cols[1]:
-            # Добавляем пустое пространство для вертикального выравнивания
-            st.empty()
-            submit_button = st.form_submit_button("→", type="secondary")
-
-        # Добавляем CSS для стилизации
-        st.markdown("""
-        <style>
-        /* Стили для формы */
-        div[data-testid="stForm"] {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 0.5rem;
-            margin-top: 1rem;
-            background-color: #f9fafb;
-        }
-
-        /* Стили для кнопки */
-        div[data-testid="stFormSubmitButton"] button {
-            min-height: 3rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Стили для поля ввода */
-        div[data-testid="stTextArea"] textarea {
-            box-shadow: none !important;
-            border: none !important;
-            background-color: transparent !important;
-        }
-
-        /* Убираем лишние отступы */
-        div[data-testid="stVerticalBlock"] {
-            gap: 0 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        custom_input = st.text_area(
+            "Введите запрос...",
+            key="custom_chat_input",
+            height=100,
+            label_visibility="collapsed",
+            help="Нажмите Ctrl+Enter для отправки"
+        )
+        submit_button = st.form_submit_button("Отправить")
 
     # Обработка отправки сообщения
     if submit_button or (st.session_state.get("ctrl_enter_pressed", False) and custom_input.strip()):
@@ -190,7 +150,7 @@ with doc_col:
         edited_text = st.text_area(
             "Редактор Markdown",
             st.session_state.document_text,
-            height=450,
+            height=400,
             label_visibility="collapsed",
             key="doc_editor"
         )
@@ -204,7 +164,7 @@ with doc_col:
         # Создаем контейнер с фиксированной высотой и скроллбаром
         st.markdown(
             f"""
-            <div style="height: 450px; overflow-y: auto; border: 1px solid #e1e4e8; border-radius: 0.25rem; padding: 0.5rem;">
+            <div style="height: 400px; overflow-y: auto; border: 1px solid #e1e4e8; border-radius: 0.25rem; padding: 0.5rem;">
             {st.session_state.document_text}
             """,
             unsafe_allow_html=True
