@@ -35,7 +35,7 @@ class LlmGate():
 
     def __init__(self):
         self.models = []
-        ##self.models.append(Ollama8b())
+        #self.models.append(Ollama8b())
         self.models.append(OpenRouterDeepseekChatV30324_2())
         self.models.append(OpenRouterDeepseekChatV30324())
         #self.models.append(BotHubDeepseekChatV30324Free())
@@ -141,7 +141,7 @@ class OllamaBased(LLM):
 
 class Ollama8b(OllamaBased):
     def __init__(self):
-        super().__init__("llama3:8b")
+        super().__init__("qwen3:8b")
 
 class OpenRouterDeepseekChatV30324(LLmWithOpenAiApi):
     def __init__(self):

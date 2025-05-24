@@ -11,6 +11,9 @@ from src.utils.sugar import substring_after, substring_before_last, ends_with
 class BaseAgent(ABC):
     __gate = LlmGate()
 
+    def _gate(self):
+        return self.__gate
+
     def __init__(self, role: str, name: str, project: str = 'default', prompt_dir: str = None):
         self._role = role  # Защищенное поле (по соглашению)
         self._name = name
