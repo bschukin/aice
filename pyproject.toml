@@ -8,7 +8,7 @@ python = "~3.11"
 numpy = "^1.26.4"
 poethepoet = "0.29.0"
 datasets = "^3.0.1"
-torch = "2.2.2"
+torch = "^2.7.0"
 
 # Feature engineering
 langchain = "^0.3.25"
@@ -16,7 +16,8 @@ langchain-community = "^0.3.23"
 langchain-openai = "^0.3.16"
 langchain-ollama = "^0.3.2"
 
-sentence-transformers = "^3.0.0"
+sentence-transformers = "^4.1.0"
+faiss-cpu="*"
 docx2txt="*"
 
 jinja2 = "^3.1.4"
@@ -31,6 +32,7 @@ uvicorn = "^0.30.6"
 opik = "^0.2.2"
 streamlit = "^1.45.0"
 justext = "*"
+transformers = "^4.52.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -60,3 +62,5 @@ level = "INFO"
 sink = "stdout"
 format = "{time:HH:mm:ss}|{level:<8}|{message}"
 level = "INFO"
+
+#poetry add torch@latest transformers@latest sentence-transformers@latest
