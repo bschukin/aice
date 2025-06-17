@@ -1,5 +1,4 @@
 # Пушкин — AI-ассистент руководителя (v2.0)
-from datetime import datetime
 from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
 

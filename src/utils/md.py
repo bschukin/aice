@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -65,6 +65,15 @@ class Subsection(MdElement):
         if l is None:
             return None
         self.content.remove(l)
+        return l
+
+    def findAndChangeLine(self, old_line:str, new_line:str)->Line|None:
+        l = self.findLine(old_line)
+        if l is None:
+            return None
+        index = self.content.index(l)
+        self.content.remove(l)
+        self.content.insert(index, Line(text=new_line))
         return l
 
 
@@ -162,7 +171,7 @@ def apply_markdown_changes(md_text: str, changes: List[ChangeItem]) -> str:
         elif change.type == "edit":
             handle_edit(result, change)
         elif change.type == "delete":
-            raise Exception("t0d0")
+            handle_delete(result, change)
         elif change.type == "move":
             raise Exception("t0d0")
 
@@ -180,23 +189,26 @@ def handle_add(tree:MD, item:ChangeItem):
 def handle_edit(tree:MD, item:ChangeItem):
     section = tree.findOrAddSection(item.section)
     subsection = section.findOrAddSubsection(item.subsection)
+
+    if subsection is not None:
+        subsection.findAndChangeLine(item.old_text, item.new_text)
+    else:
+        raise Exception("is it fiasko")
+        #section.content.append(Line(text=line))
+
+
+def handle_delete(tree:MD, item:ChangeItem):
+    section = tree.findOrAddSection(item.section)
+    subsection = section.findOrAddSubsection(item.subsection)
     old_lines = item.old_text.split('\n')
-    new_lines = item.new_text.split('\n')
 
     for line in old_lines:
         l = subsection.findAndDeleteLine(line)
         print(l)
 
-    for line in new_lines:
-        if subsection is not None:
-            subsection.content.append(Line(text=line))
-        else:
-            section.content.append(Line(text=line))
-
-
 def string_is_string(str1:str, str2:str)->bool:
-    s1 = str1.lower().strip()
-    s2 = str2.lower().strip()
+    s1 = str1.lower().strip()  #todo еще удалять все пробелы внутри строки
+    s2 = str2.lower().strip()  #todo еще удалять все пробелы внутри строки
 
     if not s1 and s2:
         return False

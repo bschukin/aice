@@ -5,6 +5,7 @@ from langchain_core.messages import HumanMessage, BaseMessage, AIMessage, System
 from dotenv import load_dotenv
 import os
 
+from utils.sugar import substring_after
 
 load_dotenv()
 
@@ -35,9 +36,9 @@ class LlmGate():
 
     def __init__(self):
         self.models = []
-        #self.models.append(Ollama8b())
-        self.models.append(OpenRouterDeepseekChatV30324_2())
-        self.models.append(OpenRouterDeepseekChatV30324())
+        self.models.append(Qwen38b())
+        #self.models.append(OpenRouterDeepseekChatV30324_2())
+        #self.models.append(OpenRouterDeepseekChatV30324())
         #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
 
@@ -139,9 +140,14 @@ class OllamaBased(LLM):
                 langchain_messages.append(SystemMessage(content=msg["content"]))
         return langchain_messages
 
-class Ollama8b(OllamaBased):
+class Qwen38b(OllamaBased):
     def __init__(self):
         super().__init__("qwen3:8b")
+
+    def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
+        s = super().prompt(prompt, prev_messages, temperature)
+        res = substring_after(s, "</think>").strip()
+        return res
 
 class OpenRouterDeepseekChatV30324(LLmWithOpenAiApi):
     def __init__(self):

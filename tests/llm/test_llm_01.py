@@ -2,7 +2,7 @@ print("0000000000000")
 import re
 import pytest
 
-from llm.llm_gate import Ollama8b, OpenRouterDeepseekChatV30324_2
+from llm.llm_gate import Qwen38b, OpenRouterDeepseekChatV30324_2
 from src.llm.llm_gate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324Free
 
 def clean(s:str)->str:
@@ -30,13 +30,13 @@ def test_LlmGate():
 
 @pytest.mark.asyncio
 async def test_Async():
-    chat = Ollama8b()
+    chat = Qwen38b()
     resp = await chat.aprompt(test_prompt)
     print(resp)
     assert clean(resp) == clean('Hello, world!')
 
-def test_Ollama8b():
-    chat = Ollama8b()
+def test_Qwen38b():
+    chat = Qwen38b()
     resp = chat.prompt(test_prompt)
     print(resp)
     assert clean(resp) == clean('Hello, world!')
