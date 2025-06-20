@@ -6,17 +6,16 @@ from pydantic import BaseModel, Field
 # --- Классы для инкрементных изменений ---
 class ChangeItem(BaseModel):
     """Одно изменение в STD"""
-    type: Literal["add", "edit", "delete", "move"] = Field(..., description="Тип операции")
-    section: str = Field(..., description="Раздел (например, Долгосрочные/Среднесрочные/Постоянные)")
-    subsection: Optional[str] = Field(None, description="Подраздел (например 'Безопасная разработка')")
+    type: Literal["add", "edit", "delete", "move"] = Field(None, description="Тип операции")
+    sections: Optional[list[str]] = Field(None, description="Локация в  разделах уровня '#', '##', '###' и тд. (например ['Долгосрочные цели', 'Цели 2025', 'Основать направление ИИ в компании'])")
     old_text: Optional[str] = Field(None, description="Исходный текст для замены/удаления")
-    new_text: Optional[str] = Field(None, description="Новый текст (для add/edit)")
+    new_text: Optional[str] = Field(None, description="Новый текст (для add/edit). Текст должен содержать строку целиком, без переносов строки '\n'. Если строка не яаляется разделом ('#', '##'), добавляй в начало символ '- ' ")
 
 
 class ConflictAlert(BaseModel):
     """Конфликт при изменении"""
-    description: str = Field(example="Пересечение сроков с задачей 'Реестр сервисов'")
-    suggested_solution: str = Field(example="Перенести на июль или уменьшить объем")
+    description: str = Field(description="Пересечение сроков с задачей 'Реестр сервисов'")
+    suggested_solution: str = Field(description="Перенести на июль или уменьшить объем")
 
 
 # --- Основной формат ответа ---

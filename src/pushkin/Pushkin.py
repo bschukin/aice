@@ -7,6 +7,7 @@ from pushkin.prompts.pushkin_commands_schema import PushkinResponse
 from utils.file_io import read_project_file, write_project_file, get_project_file_latest
 from utils.md import apply_md_changes
 from utils.sugar import substring_after, substring_before_last
+import traceback
 
 
 class Pushkin(BaseAgent):
@@ -74,6 +75,7 @@ class Pushkin(BaseAgent):
 
         except Exception as e:  # 'as e' сохраняет исключение в переменную e
             print(f"Произошла ошибка: {e}")  # Печатаем ошибку
+            traceback.print_exc()  # Выводит полный трейсбек ошибки
             return json_data + "   @raw"
 
     def load_dict_from_json(self, cleanead)->dict:

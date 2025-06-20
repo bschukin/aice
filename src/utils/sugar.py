@@ -9,6 +9,9 @@ def iif(condition:bool, if_true, if_false):
 def elvis(value, default):
     return value if value is not None else default
 
+def is_empty_or_whitespace(s):
+    return not s.strip()
+
 def substring_before(s, delimiter):
     """Аналог Kotlin's subStringBefore()"""
     index = s.find(delimiter)
