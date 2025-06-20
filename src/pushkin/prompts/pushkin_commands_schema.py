@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field
 class ChangeItem(BaseModel):
     """Одно изменение в STD"""
     type: Literal["add", "edit", "delete", "move"] = Field(None, description="Тип операции")
-    sections: Optional[list[str]] = Field(None, description="Локация в  разделах уровня '#', '##', '###' и тд. (например ['Долгосрочные цели', 'Цели 2025', 'Основать направление ИИ в компании'])")
+    sections: Optional[list[str]] = Field(None, description="Локация в  разделах уровня '#', '##', '###' и тд. (например ['Долгосрочные цели', 'Цели 2025', 'Основать направление ИИ в компании']). Если тип операции - 'delete' и удаляется раздел целиком, можно указать только sections, не указывая old_text, new_text")
     old_text: Optional[str] = Field(None, description="Исходный текст для замены/удаления")
-    new_text: Optional[str] = Field(None, description="Новый текст (для add/edit). Текст должен содержать строку целиком, без переносов строки '\n'. Если строка не яаляется разделом ('#', '##'), добавляй в начало символ '- ' ")
+    new_text: Optional[str] = Field(None, description="Новый текст (для add/edit). Текст должен содержать строку целиком, без переносов строки '\n'. Если строка не является разделом ('#', '##'), добавляй в начало символ '- ' ")
 
 
 class ConflictAlert(BaseModel):

@@ -32,7 +32,7 @@ def substring_after(s: str, delimiter: str, save_delimiter: bool = False) -> str
     """
     index = s.find(delimiter)
     if index == -1:
-        return ""
+        return s
 
     return s[index:] if save_delimiter else s[index + len(delimiter):]
 

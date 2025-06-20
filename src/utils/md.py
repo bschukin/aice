@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from pushkin.prompts.pushkin_commands_schema import ChangeItem, PushkinResponse
-from utils.sugar import substring_after, iif
+from utils.sugar import substring_after, iif, is_empty_or_whitespace
 
 console = Console()
 
@@ -43,29 +43,35 @@ def insert_section_into_markdown(content, target_header, new_content, delete_tar
 
 
 class MdElement(BaseModel):
+    text: str
+
     def getMDText(self) -> str:
         return ""
 
 
 class Line(MdElement):
-    text: str
 
     def getMDText(self) -> str:
+        stripped = self.text.strip()
+        if not stripped:
+            return self.text
+        if stripped.startswith("-"):
+            return self.text
         return "- " + self.text
 
 
 class Section(MdElement):
-    name: str
     level: int = 0
     parent: Optional[Section] = None
-    content: list[Line | Section] = Field(default_factory=list)
+    content: list[MdElement] = Field(default_factory=list)
+    isNew: bool = False
 
     def _make_hashes(self) -> str:
         return '#' * (self.level + 1)
 
     def getMDText(self) -> str:
         content_str = "\n".join(line.getMDText() for line in self.content)
-        return f"{self._make_hashes()} {self.name}\n{content_str}"
+        return f"{self._make_hashes()} {self.text}\n{content_str}"
 
     def findParent(self, level: int) -> Optional[Section]:
         if self.level < level:
@@ -78,10 +84,10 @@ class Section(MdElement):
 
     def findSubsection(self, section: str) -> Section:
         return next(
-            (item for item in self.content if isinstance(item, Section) and string_is_string(item.name, section)), None)
+            (item for item in self.content if isinstance(item, Section) and string_is_string(item.text, section)), None)
 
     def addSubsection(self, section) -> Section:
-        s = Section(name=section, level=self.level + 1)
+        s = Section(text=section, level=self.level + 1, isNew=True)
         self.content.append(s)
         return s
 
@@ -89,6 +95,16 @@ class Section(MdElement):
         if section is None:
             return None
         return self.findSubsection(section) or self.addSubsection(section)
+
+    def findNode(self, node: MdElement) -> MdElement | None:
+        return next((item for item in self.content if string_is_string(item.text, node.text)), None)
+
+    def findAndDeleteNode(self, node: MdElement) -> MdElement | None:
+        n = self.findNode(node)
+        if n is None:
+            return None
+        self.content.remove(n)
+        return n
 
     def findLine(self, line: str) -> Line:
         return next((item for item in self.content if isinstance(item, Line) and (string_is_string(item.text, line))),
@@ -112,6 +128,7 @@ class Section(MdElement):
 
 
 class MD(MdElement):
+    text: str = ""
     content: list[Line | Section] = Field(default=[])
 
     def getMDText(self) -> str:
@@ -126,10 +143,10 @@ class MD(MdElement):
 
     def findSection(self, section: str) -> Section:
         return next(
-            (item for item in self.content if isinstance(item, Section) and string_is_string(item.name, section)), None)
+            (item for item in self.content if isinstance(item, Section) and string_is_string(item.text, section)), None)
 
     def addSection(self, section) -> Section:
-        s = Section(name=section)
+        s = Section(text=section)
         self.content.append(s)
         return s
 
@@ -166,13 +183,13 @@ def getNode(value: str) -> (Line | Section):
     v = value.strip()
     match v:
         case _ if v.startswith("### "):
-            return Section(name=substring_after(v, "### "), level=2)
+            return Section(text=substring_after(v, "### "), level=2)
         case _ if v.startswith("## "):
-            return Section(name=substring_after(v, "## "), level=1)
+            return Section(text=substring_after(v, "## "), level=1)
         case _ if v.startswith("# "):
-            return Section(name=substring_after(v, "# "), level=0)
+            return Section(text=substring_after(v, "# "), level=0)
         case _:
-            return Line(text=substring_after(v,"-").strip())
+            return Line(text=substring_after(v, "-").strip())
 
 
 def apply_md_changes(md_text: str, changes: PushkinResponse) -> str:
@@ -215,16 +232,23 @@ def handle_edit(tree: MD, item: ChangeItem):
 
 
 def handle_delete(tree: MD, item: ChangeItem):
-    section = tree.findOrAddSectionByPath(item.sections)
-    old_line = item.old_text
+    if item.old_text is None:
+        section = tree.findOrAddSectionByPath(item.sections[:-1])
+        node = getNode(item.sections[-1])
+    else:
+        section = tree.findOrAddSectionByPath(item.sections)
+        node = getNode(item.old_text)
 
     if section is not None:
-        section.findAndDeleteLine(old_line)
+        n = section.findAndDeleteNode(node)
     else:
         raise Exception("is it fiasko")
 
 
 def string_is_string(str1: str, str2: str) -> bool:
+    if not str1 and not  str2:
+        return True
+
     s1 = str1.lower().strip()  # todo еще удалять все пробелы внутри строки
     s2 = str2.lower().strip()  # todo еще удалять все пробелы внутри строки
 
