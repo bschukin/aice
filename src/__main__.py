@@ -1,7 +1,3 @@
-import argparse
-
-from agents.analyst import Analyst
-from agents.manager import Manager
 from pushkin.Pushkin import Pushkin
 from utils.md import print_markdown
 

@@ -1,9 +1,40 @@
 import sys
 from pathlib import Path
 import streamlit as st
+from streamlit.components.v1 import html
 
 # Первая команда Streamlit
 st.set_page_config(layout="wide", page_title="Пушкин Первый")
+# 2. Убираем отступы от HTML (добавьте это)
+st.markdown("""
+<style>
+.stMarkdown iframe {
+    margin-top: -5rem !important;
+    height: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+# 3. JS для скролла (добавьте это)
+html("""
+<script>
+document.addEventListener('keydown', function(e) {
+    const preview = document.querySelector('.markdown-preview');
+    if (!preview) return;
+
+    const active = document.activeElement;
+    if (['INPUT','TEXTAREA','BUTTON'].includes(active.tagName)) return;
+
+    if (e.key === 'ArrowDown') {
+        preview.scrollBy({top: 50, behavior: 'smooth'});
+        e.preventDefault();
+    } else if (e.key === 'ArrowUp') {
+        preview.scrollBy({top: -50, behavior: 'smooth'});
+        e.preventDefault();
+    }
+});
+</script>
+""", height=0)
+
 st.markdown("""
 <style>
 .stApp {
@@ -200,17 +231,70 @@ with doc_col:
             st.session_state.document_text = edited_text
 
     # Вкладка предпросмотра
+
     with tab_preview:
-        # Создаем контейнер с фиксированной высотой и скроллбаром
+        st.markdown("""
+        <style>
+        .markdown-preview {
+            font-family: -apple-system, sans-serif;
+            line-height: 1.35;
+            color: #333;
+            font-size: 14px;
+            padding: 0;
+        }
+        /* Жесткое переопределение h1 */
+        div[data-testid="stMarkdownContainer"] .markdown-preview h1 {
+            font-size: 1.8rem !important;
+            margin: 2.8rem 0 0.2rem 0 !important;
+            line-height: 1.2 !important;
+            font-weight: 600 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+        /*.markdown-preview h1::before {
+            content: "— ";
+            margin-right: 8px;
+            color: #444;
+            font-weight: bold;
+        }*/
+        .markdown-preview h2 {
+            font-size: 1.25rem;
+            margin: 0.7rem 0 0.35rem 0 !important;
+            font-weight: 550;
+            padding-left: 1.0rem;
+        }
+        /*.markdown-preview h2::before {
+            content: "– ";
+            margin-right: 6px;
+            color: #666;
+        }*/
+        .markdown-preview h3 {
+            font-size: 1.05rem !important;  /* Чуть больше базового */
+            color: #777 !important;         /* Полноценный чёрный */
+            margin: 0.6rem 0 0.3rem 0 !important;
+            padding-left: 1.8rem;
+            font-weight: 550 !important;    /* Полужирный */
+            letter-spacing: 0.01em;        /* Чуть разряженные буквы */
+        }
+        /*.markdown-preview h3::before {
+            content: "- ";
+            margin-right: 4px;
+            color: #888;
+        }*/
+        .markdown-preview p {
+            margin: 0.4rem 0 !important;
+        }
+        .markdown-preview ul, ol {
+            margin: 0.4rem 0 !important;
+            padding-left: 2.4rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         st.markdown(
-            f"""
-            <div style="height: 450px; overflow-y: auto; border: 1px solid #e1e4e8; border-radius: 0.25rem; padding: 0.5rem;">
-            {st.session_state.document_text}
-            """,
+            f'<div class="markdown-preview" tabindex="0" style="height:450px; overflow:auto; padding:0.5rem;">{st.session_state.document_text}</div>',
             unsafe_allow_html=True
         )
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
 # JavaScript для обработки Ctrl+Enter
 st.markdown("""

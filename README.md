@@ -9,3 +9,4 @@ Feeding the prompt with few-shot examples of question-query matches can improve 
 
 https://docs.github.com/ru/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
 
+streamlit run src/pushkin/pushkin_chatweb.py
