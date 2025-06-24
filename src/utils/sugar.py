@@ -60,3 +60,19 @@ def ends_with(s: str, suffix: str, ignore_case: bool = False) -> bool:
     if ignore_case:
         return s.lower().endswith(suffix.lower())
     return s.endswith(suffix)
+
+
+def get_last_elements(messages: list, max_length: int | None = None) -> list:
+    """Обрезает список сообщений до указанной длины.
+
+    Args:
+        messages: Список сообщений (обычно история чата).
+        max_length: Максимальная длина списка после обрезания.
+                    Если None, возвращает исходный список без изменений.
+
+    Returns:
+        Обрезанный (или исходный) список сообщений.
+    """
+    if max_length is None:
+        return messages
+    return messages[-max_length:]

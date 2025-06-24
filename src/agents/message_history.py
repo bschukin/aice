@@ -4,6 +4,7 @@ from datetime import datetime
 
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
 from paths import Paths
+from utils.sugar import get_last_elements
 
 
 class MessageHistory:
@@ -39,22 +40,23 @@ class MessageHistory:
     def get_length(self) -> int:
         return len(self.messages)
 
-    def get_full_messages(self) -> list[dict]:
+    def get_full_messages(self, max_length: int | None = None) -> list[dict]:
         """Возвращает полные сообщения со всеми метаданными и контентом"""
-        return self.messages.copy()
+        return get_last_elements(self.messages.copy(), max_length)
 
 
-    def get_prepared_messages(self) -> list[dict]:
+    def get_prepared_messages(self, max_length: int | None = None) -> list[dict]:
         """Возвращает сообщения в формате для LLM (без служебных полей)"""
-        return [
+        list =  [
             {
                 'role': msg['role'],
                 'content': msg['content']
             }
             for msg in self.messages
         ]
+        return get_last_elements(list, max_length)
 
-    def get_prepared_messages_lang_chain(self) -> list[BaseMessage]:
+    def get_prepared_messages_lang_chain(self, max_length: int | None = None) -> list[BaseMessage]:
         """Возвращает сообщения в формате для LLM (без служебных полей)"""
         langchain_messages = []
         for msg in self.messages:
@@ -64,7 +66,7 @@ class MessageHistory:
                 langchain_messages.append(AIMessage(content=msg["content"]))
             elif msg["role"] == "system":
                 langchain_messages.append(SystemMessage(content=msg["content"]))
-        return langchain_messages
+        return get_last_elements(langchain_messages, max_length)
 
     def dump_to_file(self):
         self.history_file.parent.mkdir(parents=True, exist_ok=True)

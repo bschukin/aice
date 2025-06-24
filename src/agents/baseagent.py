@@ -44,7 +44,7 @@ class BaseAgent(ABC):
 
     def chat(self, prompt: str, temperature=0.0) -> str:
         messages = (self._get_system_prompt()
-                    + self._history.get_prepared_messages()
+                    + self._history.get_prepared_messages(50)
                     + [{'role': 'user', 'content': prompt}])
 
         self._history.add_message("user", prompt)
