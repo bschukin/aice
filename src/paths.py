@@ -55,8 +55,6 @@ class Paths:
 
     def get_agent_history_file(cls, project: str, agent:str) -> Path:
         return cls.get_project_artifact(project, artifact=agent + agent_history_file_suffix)
-    def get_agent_techhistory_file(cls, project: str, agent:str) -> Path:
-        return cls.get_project_artifact(project, artifact=agent + agent_techhistory_file_suffix)
 
     @staticmethod
     def get_agent_prompt_file_name(agent:str) -> str:

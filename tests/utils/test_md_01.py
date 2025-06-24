@@ -43,8 +43,8 @@ def test_md_change():
   Москва
     """.strip()
     print("=============")
-    pr = PushkinResponse(for_human="", changes_made=[])
-    pr.changes_made.append(ChangeItem(type="add", section="Раздел4", subsection="Раздел43", new_text="Кохма"))
+    pr = PushkinResponse(for_human="", changes_made=[], conflicts=[], requires_confirmation=False, full_std=None)
+    pr.changes_made.append(ChangeItem(type="add", sections=["Раздел4", "Раздел43"], new_text="Кохма", old_text=None))
     text = apply_md_changes(md, pr)
     print(text)
 

@@ -1,9 +1,8 @@
-print("0000000000000")
 import re
 import pytest
 
 from llm.llm_gate import Qwen38b, OpenRouterDeepseekChatV30324_2
-from src.llm.llm_gate import LlmGate, OpenRouterDeepseekChatV30324,BotHubDeepseekChatV30324Free
+from src.llm.llm_gate import LlmGate, BotHubDeepseekChatV30324Free
 
 def clean(s:str)->str:
     return (re.sub(r"[^a-zA-Z0-9а-яА-ЯёЁ]", "",s)
@@ -24,7 +23,7 @@ def test_BotHubDeepseekChatV30324Free():
 
 def test_LlmGate():
     gate = LlmGate()
-    resp = gate.promptNo(test_prompt)
+    resp = gate.prompt(test_prompt)
     print(resp)
     assert clean(resp) == clean('Hello, world!')
 

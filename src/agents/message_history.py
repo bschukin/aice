@@ -2,9 +2,8 @@ import json
 import os
 from datetime import datetime
 
-from paths import Paths
-from utils.sugar import substring_after, substring_before, elvis
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
+from paths import Paths
 
 
 class MessageHistory:
@@ -17,45 +16,33 @@ class MessageHistory:
         self.project = project
         self.agent = agent_name
         self.history_file = Paths().get_agent_history_file(self.project, self.agent)
-        self.techhistory_file = Paths().get_agent_techhistory_file(self.project, self.agent)
         self.messages = self.__load_from_file()
 
-    def add_message(self, role, content, tech_content:str = None, error:bool = False):
-        tech_content = elvis(tech_content,content)
-        """Добавляет сообщение с автоматической датой и временем"""
-        text = substring_before(content, "(@")
-        model = substring_after(content, "(@")
+    def add_message(self, role, content, tech_content:str = None, model:str = None, error:bool = False):
+
         message = {
             'role': role,
-            'content': text,
-            'tech_content': tech_content,
-            'timestamp': datetime.now().isoformat(),  # ISO-формат даты-времени
+            'content': content,
+            'timestamp': datetime.now().strftime("%d.%m.%Y %H:%M"),
         }
         if error:
             message['error'] = True
 
-        if model!= '':
-            message['model'] = model[0:-1]
+        if tech_content:
+            message['tech_content'] = tech_content
+
+        if model:
+            message['model'] = model
 
         self.messages.append(message)
 
     def get_length(self) -> int:
-        """Возвращает полные сообщения со всеми метаданными"""
         return len(self.messages)
 
     def get_full_messages(self) -> list[dict]:
-        """Возвращает полные сообщения со всеми метаданными"""
+        """Возвращает полные сообщения со всеми метаданными и контентом"""
         return self.messages.copy()
 
-    def get_tech_messages(self) -> list[dict]:
-        """ Возвращает технические сообщения """
-        field_to_remove = "content"
-
-        tech_messages = [
-            {key: value for key, value in item.items() if key != field_to_remove}
-            for item in self.messages
-        ]
-        return tech_messages
 
     def get_prepared_messages(self) -> list[dict]:
         """Возвращает сообщения в формате для LLM (без служебных полей)"""
@@ -81,10 +68,7 @@ class MessageHistory:
 
     def dump_to_file(self):
         self.history_file.parent.mkdir(parents=True, exist_ok=True)
-        self.techhistory_file.parent.mkdir(parents=True, exist_ok=True)
         with open(self.history_file, 'w',  encoding="utf-8") as f:
-            json.dump(self.get_prepared_messages(), f, ensure_ascii=False, indent=1)
-        with open(self.techhistory_file, 'w',  encoding="utf-8") as f:
             json.dump(self.messages, f, ensure_ascii=False, indent=1)
 
     def __load_from_file(self)->[]:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+
 from pydantic import BaseModel, Field
 from src.agents.prompts.PRD_schema import PRD
 
@@ -80,3 +81,9 @@ class AgentResponse(BaseModel):
     artifact_delta: Optional[PRD] = Field(description="Измененная версия документа."
                                                      " Для передачи дельт используется полная версия формата")
     no_new_information:Optional[bool] = Field(description="Флаг, устанавливается в true, если изменений в артефактах нет. Если False. - поле нужно не выводить в json")
+
+class ParsedResponse(BaseModel):
+    human_response : Optional[str] = None
+    formatted_response: Optional[str] = None
+    isError: bool = False
+    error_response: Optional[str] = None

@@ -77,7 +77,7 @@ class Requirement(BaseModel):
     code: Optional[str] = Field(
         description="Фасетный (составной) номер требования. Номер может быть составным, если создается иерархия")
     value:str = Field(description="Формулировка требования")
-    dependent_reqs: Optional[List[Requirement]] = (
+    dependent_reqs: Optional[List["Requirement"]] = (
         Field(description="Зависимые (вложенные) требования. Если коллекция пуста - ЗАПРЕЩАЕТСЯ выводить данное поле в json", min_length=1))
 
 class FunctionalRequirements(BaseModel):

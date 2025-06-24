@@ -1,7 +1,7 @@
 import json
 from abc import ABC
 
-from agents.prompts.commands_schema import AgentResponse
+from agents.prompts.commands_schema import AgentResponse, ParsedResponse
 from agents.system_prompt import SystemPrompt
 from llm.llm_gate import LlmGate
 from agents.message_history import MessageHistory
@@ -47,26 +47,24 @@ class BaseAgent(ABC):
                     + self._history.get_prepared_messages()
                     + [{'role': 'user', 'content': prompt}])
 
-        resp = self.__gate.request(messages, temperature)
-
-        parsed_resp = self._parse_agent_response(resp)
-        is_error = ends_with(parsed_resp, "@raw")
-
         self._history.add_message("user", prompt)
-        if is_error is not True:
-            self._history.add_message("assistant", content=parsed_resp, tech_content=resp)
+
+        resp, model = self.__gate.request(messages, temperature)
+        print(resp)
+        parsed_resp = self._parse_agent_response(resp)
+
+        if parsed_resp.isError:
+            self._history.add_message("assistant", content=resp, tech_content=resp, model=model, error=True)
         else:
-            self._history.add_message("assistant", content=resp, tech_content=resp, error=True)
+            self._history.add_message("assistant", content=parsed_resp.human_response, tech_content=resp, model=model)
 
-        print("================")
-        return parsed_resp
+        return parsed_resp.human_response
 
-    def _parse_agent_response(self, json_data) -> str:
+    def _parse_agent_response(self, json_data) -> ParsedResponse:
         cleanead = self.__extract_json(json_data)
         data_dict = json.loads(cleanead)
-        ar = AgentResponse.model_validate(data_dict)
-        print(ar)
-        return ar.for_human
+        ar = AgentResponse.model_construct(**data_dict)
+        return ParsedResponse(human_response=ar.for_human, formatted_response=cleanead)
 
     @staticmethod
     def __extract_json(json_data) -> str:

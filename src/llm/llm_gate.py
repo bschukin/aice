@@ -43,36 +43,37 @@ class LlmGate():
         #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
 
-    def __responce(self, resp: str) -> str:
-        return resp + " (@" + self._aliveModel.__class__.__name__ + ")"
-
-    def promptNo(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
-        return self.prompt(prompt, prev_messages, temperature).rpartition('(@')[0]
+    def get_active_model_name(self):
+        return  self._aliveModel.__class__.__name__
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         messages = (prev_messages if prev_messages is not None else []) + [{'role': 'user', 'content': prompt}]
-        return self.request(messages, temperature)
+        return self.request(messages, temperature)[0]
 
-    def request(self, messages: list, temperature: float = 0.0) -> str:
+    def _request_active_model(self, messages: list, temperature: float = 0.0)-> (str,str):
+        response = self._aliveModel.request(messages, temperature)
+        return response, self.get_active_model_name()
+
+    def request(self, messages: list, temperature: float = 0.0) -> (str,str):
         # Сначала пробуем текущую живую модель
         if self._aliveModel is not None:
             try:
-                response = self._aliveModel.request(messages, temperature)
-                return self.__responce(response)
+                return self._request_active_model(messages, temperature)
             except Exception:
-                pass  # Продолжаем поиск рабочей модели
+                pass  # начинаем поиск рабочей модели
 
         # Если живая модель не сработала, ищем первую рабочую среди всех
+        # todo: лучше сделать курсор, чтобы не идти по уже заведомо мертвым моделям
         for model in self.models:
             try:
-                response = model.request(messages, temperature)
                 self._aliveModel = model  # Запоминаем рабочую модель
-                return self.__responce(response)
+                return self._request_active_model(messages, temperature)
             except Exception as e:
                 print(f"⚠️ gate ({type(e).__name__}): {str(e)}")
                 continue  # Пробуем следующую модель
 
         # Если ни одна модель не сработала
+        self._aliveModel = None
         raise Exception("All models failed to respond")
 
 
@@ -86,7 +87,6 @@ class LLmWithOpenAiApi(LLM):
 
     def prompt(self, prompt: str, prev_messages: list | None = None, temperature: float = 0.0) -> str:
         messages = (prev_messages if prev_messages is not None else []) + [{'role': 'user', 'content': prompt}]
-
         return self.request(messages, temperature)
 
     def request(self, messages: list, temperature: float = 0.0) -> str:
@@ -94,7 +94,7 @@ class LLmWithOpenAiApi(LLM):
             messages=messages,
             model=self.model,
             temperature=temperature,
-            response_format={"type": "json_object"}
+            #response_format={"type": "json_object"}
         )
         if chat_completion.model_extra is not None:
             if chat_completion.model_extra.get("error") is not None:
