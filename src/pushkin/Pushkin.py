@@ -5,6 +5,7 @@ from agents.baseagent import BaseAgent
 from agents.prompts.commands_schema import ParsedResponse
 from agents.system_prompt import SystemPrompt
 from pushkin.prompts.pushkin_commands_schema import PushkinResponse
+from utils.dates import get_current_datetime_info
 from utils.file_io import read_project_file, write_project_file, get_project_file_latest
 from utils.md import apply_md_changes
 from utils.sugar import substring_after, substring_before_last
@@ -13,12 +14,9 @@ import traceback
 
 class Pushkin(BaseAgent):
 
-    weekdays = ["понедельник", "вторник", "среда",
-                "четверг", "пятница", "суббота", "воскресенье"]
-
     def __init__(self, name: str = "Pushkin", project: str = 'pushkin'):
+
         super().__init__(role="pushkin", name=name, project=project, prompt_dir="src.pushkin.prompts")
-        self._std_example = SystemPrompt.load_statement_file(project, "STD.example.md", prompt_dir=self._prompt_dir)
         self._response_schema = SystemPrompt.load_statement_file(project, "pushkin_commands_schema.py",
                                                                  prompt_dir=self._prompt_dir, )
 
@@ -35,7 +33,7 @@ class Pushkin(BaseAgent):
 
 
         agent_prompt = {'role': 'system', 'content': self._prompt.agent_prompt
-                                                     + "\r\n============\r\n" + "В качестве примера будет передана полная текущая версия STD. ЕЕ и следует изменять. "
+                                                     + "\r\n============\r\n" + "В качестве примера будет передана полная текущая версия STD. Ее и следует изменять. "
                                                      + "\r\n============\r\n" + self._response_schema}
         current_std = {'role': 'system', 'content':
             """
@@ -44,9 +42,8 @@ class Pushkin(BaseAgent):
             """ +
             self.get_STD()}
 
-        now = datetime.now().strftime("%d.%m.%Y %H:%M")
-        weekday_num = datetime.now().weekday()
-        curr_date = {'role': 'system', 'content': f"Текущая дата и время: {now}. День недели: {self.weekdays[weekday_num]}."}
+        now = get_current_datetime_info()
+        curr_date = {'role': 'system', 'content': now}
 
         return [nb0, curr_date, agent_prompt, current_std]
 
@@ -75,7 +72,7 @@ class Pushkin(BaseAgent):
         except Exception as e:  # 'as e' сохраняет исключение в переменную e
             print(f"Произошла ошибка: {e}")  # Печатаем ошибку
             traceback.print_exc()  # Выводит полный трейсбек ошибки
-            return json_data + "   @raw"
+            return ParsedResponse(isError=True, error_response=json_data)
 
     def load_dict_from_json(self, cleanead)->dict:
         dict =  json.loads(cleanead)

@@ -50,7 +50,7 @@ class BaseAgent(ABC):
         self._history.add_message("user", prompt)
 
         resp, model = self.__gate.request(messages, temperature)
-        print(resp)
+        #print(resp)
         parsed_resp = self._parse_agent_response(resp)
 
         if parsed_resp.isError:
