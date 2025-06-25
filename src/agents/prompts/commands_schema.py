@@ -87,3 +87,4 @@ class ParsedResponse(BaseModel):
     formatted_response: Optional[str] = None
     isError: bool = False
     error_response: Optional[str] = None
+    pydantic_result:Optional[BaseModel] = None

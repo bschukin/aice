@@ -1,7 +1,7 @@
 from sqlalchemy.testing.plugin.plugin_base import start_test_class_outside_fixtures
 
 from pushkin.Pushkin import Pushkin
-from pushkin.prompts.pushkin_commands_schema import ChangeItem, PushkinResponse
+from pushkin.prompts.pushkin_response import ChangeItem, PushkinResponse
 import re
 
 from utils.md import buildMDTree, apply_md_changes

@@ -1,4 +1,4 @@
-# Пушкин — AI-ассистент руководителя (v2.0)
+# Пушкин — AI-ассистент руководителя. Схема ответов.
 from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
 

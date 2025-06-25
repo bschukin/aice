@@ -51,7 +51,9 @@ class BaseAgent(ABC):
 
         resp, model = self.__gate.request(messages, temperature)
         #print(resp)
+
         parsed_resp = self._parse_agent_response(resp)
+        parsed_resp = self._process_agent_response(parsed_resp)
 
         if parsed_resp.isError:
             self._history.add_message("assistant", content=resp, tech_content=resp, model=model, error=True)
@@ -64,7 +66,10 @@ class BaseAgent(ABC):
         cleanead = self.__extract_json(json_data)
         data_dict = json.loads(cleanead)
         ar = AgentResponse.model_construct(**data_dict)
-        return ParsedResponse(human_response=ar.for_human, formatted_response=cleanead)
+        return ParsedResponse(human_response=ar.for_human, formatted_response=cleanead, pydantic_result = ar)
+
+    def _process_agent_response(self, pr:ParsedResponse) -> ParsedResponse:
+        return pr
 
     @staticmethod
     def __extract_json(json_data) -> str:

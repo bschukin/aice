@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from rich.console import Console
 from rich.markdown import Markdown
 
-from pushkin.prompts.pushkin_commands_schema import ChangeItem, PushkinResponse
+from pushkin.prompts.pushkin_response import ChangeItem, PushkinResponse
 from utils.sugar import substring_after, iif, is_empty_or_whitespace
 
 console = Console()
