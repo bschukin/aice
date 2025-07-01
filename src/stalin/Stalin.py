@@ -13,23 +13,23 @@ from utils.sugar import substring_after, substring_before_last
 import traceback
 
 
-class Pushkin(BaseAgent):
+class Stalin(BaseAgent):
 
-    def __init__(self, name: str = "Pushkin", project: str = 'pushkin'):
+    def __init__(self, name: str = "Stalin", project: str = 'stalin'):
 
-        super().__init__(role="pushkin", name=name, project=project, prompt_dir="src.pushkin.prompts")
-        self._response_schema = SystemPrompt.load_statement_file(project, "pushkin_response.py",
-                                                                 prompt_dir=self._prompt_dir, )
+        super().__init__(role="stalin", name=name, project=project, prompt_dir="src.stalin.prompts")
+        self._response_schema = SystemPrompt.load_statement_file("pushkin", "pushkin_response.py",
+                                                                 prompt_dir="src.pushkin.prompts", )
 
-    def get_STD(self) -> str:
-        return read_project_file(self._project, get_project_file_latest(self._project, "STD", "md"))
+    def get_HRD(self) -> str:
+        return read_project_file(self._project, get_project_file_latest(self._project, "HRD", "md"))
 
     def _get_system_prompt(self) -> list[dict[str, str]]:
 
         curr_date = {'role': 'system', 'content': get_current_datetime_info()}
         agent_prompt = {'role': 'system', 'content': self._prompt.agent_prompt}
         responce_schema = {'role': 'system', 'content': self._response_schema}
-        current_std = {'role': 'system', 'content':self.get_STD()}
+        current_std = {'role': 'system', 'content':self.get_HRD()}
 
         return [curr_date, agent_prompt, responce_schema, current_std]
 
@@ -52,14 +52,14 @@ class Pushkin(BaseAgent):
         pr:AiAgentResponse = cast(AiAgentResponse, prs.pydantic_result)
 
         if pr.changes_made:
-            text = apply_md_changes(self.get_STD(), pr)
-            filename = f"STD.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.MD"
+            text = apply_md_changes(self.get_HRD(), pr)
+            filename = f"HRD.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.MD"
             write_project_file(self._project, filename, text)
 
         if pr.full_document:
             assert pr.changes_made is None or len(pr.changes_made) == 0
             text = pr.full_document
-            filename = f"STD.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.MD"
+            filename = f"HRD.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.MD"
             write_project_file(self._project, filename, text)
 
         return prs

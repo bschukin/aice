@@ -1,17 +1,17 @@
-from pushkin.Pushkin import Pushkin
+from stalin.Stalin import Stalin
 
 
-def test_pushkin_prompt():
-    p = Pushkin()
+def test_stalin_prompt():
+    p = Stalin()
     prompt = p._get_system_prompt()
 
     for item in prompt:
         print(item)
 
-    assert prompt[1]['content'].lower().__contains__("Пушкин".lower())
+    assert prompt[1]['content'].lower().__contains__("Сталин".lower())
 
-def test_pushkin_chat():
-    p = Pushkin()
+def test_stalin_chat():
+    p = Stalin()
     p.reset_state()
     res = p.chat("Привет, Пушкин! Внеси главную задачу в 25й: сделаться экспертом в разработке ИИ-агентов")
     print(res)

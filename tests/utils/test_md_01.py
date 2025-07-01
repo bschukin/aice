@@ -1,7 +1,7 @@
 from sqlalchemy.testing.plugin.plugin_base import start_test_class_outside_fixtures
 
 from pushkin.Pushkin import Pushkin
-from pushkin.prompts.pushkin_response import ChangeItem, PushkinResponse
+from pushkin.prompts.pushkin_response import ChangeItem, AiAgentResponse
 import re
 
 from utils.md import buildMDTree, apply_md_changes
@@ -43,7 +43,7 @@ def test_md_change():
   Москва
     """.strip()
     print("=============")
-    pr = PushkinResponse(for_human="", changes_made=[], conflicts=[], requires_confirmation=False, full_std=None)
+    pr = AiAgentResponse(for_human="", changes_made=[], conflicts=[], requires_confirmation=False, full_document=None)
     pr.changes_made.append(ChangeItem(type="add", sections=["Раздел4", "Раздел43"], new_text="Кохма", old_text=None))
     text = apply_md_changes(md, pr)
     print(text)

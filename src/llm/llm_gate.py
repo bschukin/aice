@@ -37,10 +37,10 @@ class LlmGate():
     def __init__(self):
         self.models = []
         #self.models.append(Qwen38b())
-        self.models.append(OpenRouterDeepseekChatV30324_3())
-        self.models.append(OpenRouterDeepseekChatV30324_2())
-        self.models.append(OpenRouterDeepseekChatV30324())
-        #self.models.append(BotHubDeepseekChatV30324Free())
+        #self.models.append(OpenRouterDeepseekChatV30324_3())
+        #self.models.append(OpenRouterDeepseekChatV30324_2())
+        #self.models.append(OpenRouterDeepseekChatV30324())
+        self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
 
     def get_active_model_name(self):

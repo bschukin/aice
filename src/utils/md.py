@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 from rich.console import Console
 from rich.markdown import Markdown
 
-from pushkin.prompts.pushkin_response import ChangeItem, PushkinResponse
-from utils.sugar import substring_after, iif, is_empty_or_whitespace
+from pushkin.prompts.pushkin_response import ChangeItem, AiAgentResponse
+from utils.sugar import substring_after
 
 console = Console()
 
@@ -192,7 +192,7 @@ def getNode(value: str) -> (Line | Section):
             return Line(text=substring_after(v, "-").strip())
 
 
-def apply_md_changes(md_text: str, changes: PushkinResponse) -> str:
+def apply_md_changes(md_text: str, changes: AiAgentResponse) -> str:
     return apply_markdown_changes(md_text, changes.changes_made)
 
 
