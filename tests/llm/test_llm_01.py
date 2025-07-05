@@ -1,7 +1,7 @@
 import re
 import pytest
 
-from llm.llm_gate import Qwen38b, OpenRouterDeepseekChatV30324_2
+from llm.llm_gate import Qwen38b, OpenRouterDeepseekChatV30324_2, BotHubGemini2Flash
 from src.llm.llm_gate import LlmGate, BotHubDeepseekChatV30324Free
 
 def clean(s:str)->str:
@@ -18,6 +18,12 @@ def test_OpenRouterDeepseekChatV30324():
 def test_BotHubDeepseekChatV30324Free():
     chat = BotHubDeepseekChatV30324Free()
     resp = chat.prompt(test_prompt)
+    print(resp)
+    assert clean(resp) == clean('Hello, world!')
+
+def test_BotHubGemini2Flash():
+    chat = BotHubGemini2Flash()
+    resp = chat.prompt("Как тебя зовут, Брат?")
     print(resp)
     assert clean(resp) == clean('Hello, world!')
 

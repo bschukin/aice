@@ -40,8 +40,9 @@ class LlmGate():
         #self.models.append(OpenRouterDeepseekChatV30324_3())
         #self.models.append(OpenRouterDeepseekChatV30324_2())
         #self.models.append(OpenRouterDeepseekChatV30324())
-        self.models.append(BotHubDeepseekChatV30324Free())
+        #self.models.append(BotHubDeepseekChatV30324Free())
         #self.models.append(BotHubDeepseekChatV30324())
+        self.models.append(BotHubGemini2Flash())
 
     def get_active_model_name(self):
         return  self._aliveModel.__class__.__name__
@@ -174,6 +175,12 @@ class BotHubDeepseekChatV30324Free(LLmWithOpenAiApi):
         super().__init__(os.getenv("BOTHUB_API_KEY"),
                          "https://bothub.chat/api/v2/openai/v1",
                          "deepseek-chat-v3-0324:free")
+
+class BotHubGemini2Flash(LLmWithOpenAiApi):
+    def __init__(self):
+        super().__init__(os.getenv("BOTHUB_API_KEY"),
+                         "https://bothub.chat/api/v2/openai/v1",
+                         "gemini-2.0-flash-001")
 
 
 class BotHubDeepseekChatV30324(LLmWithOpenAiApi):

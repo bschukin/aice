@@ -49,6 +49,10 @@ class Stalin(BaseAgent):
             return ParsedResponse(isError=True, error_response=json_data)
 
     def _process_agent_response(self, prs:ParsedResponse) -> ParsedResponse:
+        if prs.isError:
+            print("error!!!:" + prs.error_response)
+            return prs
+
         pr:AiAgentResponse = cast(AiAgentResponse, prs.pydantic_result)
 
         if pr.changes_made:

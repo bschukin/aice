@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from pushkin.prompts.pushkin_response import ChangeItem, AiAgentResponse
-from utils.sugar import substring_after
+from utils.sugar import substring_after, is_empty_or_whitespace
 
 console = Console()
 
@@ -71,6 +71,8 @@ class Section(MdElement):
 
     def getMDText(self) -> str:
         content_str = "\n".join(line.getMDText() for line in self.content)
+        #if isinstance(self.content[-1], Line) and not is_empty_or_whitespace(self.content[-1].text):
+         #   content_str=content_str  + "\n"
         return f"{self._make_hashes()} {self.text}\n{content_str}"
 
     def findParent(self, level: int) -> Optional[Section]:
@@ -126,6 +128,13 @@ class Section(MdElement):
         self.content.insert(index, Line(text=new_line))
         return l
 
+    def appendNodeBeforeLasrEmptyLine(self, md: MdElement)->MdElement:
+
+        if len(self.content)>=2 and self.content[-1] and isinstance(self.content[-1], Line) and is_empty_or_whitespace(self.content[-1].text):
+            self.content.insert(-1, md)
+        else:
+            self.content.append(md)
+        return md
 
 class MD(MdElement):
     text: str = ""
@@ -217,7 +226,7 @@ def handle_add(tree: MD, item: ChangeItem):
     node = getNode(item.new_text)
 
     if section is not None:
-        section.content.append(node)
+        section.appendNodeBeforeLasrEmptyLine(node)
     else:
         tree.content.append(node)
 
