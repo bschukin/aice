@@ -44,7 +44,7 @@ class BaseAgent(ABC):
 
     def chat(self, prompt: str, temperature=0.0) -> str:
         messages = (self._get_system_prompt()
-                    + self._history.get_prepared_messages(50)
+                    + self._history.get_prepared_messages(8)
                     + [{'role': 'user', 'content': prompt}])
 
         self._history.add_message("user", prompt)
@@ -57,6 +57,7 @@ class BaseAgent(ABC):
 
         if parsed_resp.isError:
             self._history.add_message("assistant", content=resp, tech_content=resp, model=model, error=True)
+            return parsed_resp.error_response
         else:
             self._history.add_message("assistant", content=parsed_resp.human_response, tech_content=resp, model=model)
 

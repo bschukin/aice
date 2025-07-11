@@ -71,8 +71,8 @@ class Section(MdElement):
 
     def getMDText(self) -> str:
         content_str = "\n".join(line.getMDText() for line in self.content)
-        #if isinstance(self.content[-1], Line) and not is_empty_or_whitespace(self.content[-1].text):
-         #   content_str=content_str  + "\n"
+        if isinstance(self.content[-1], Line) and not is_empty_or_whitespace(self.content[-1].text):
+            content_str=content_str  + "\n"
         return f"{self._make_hashes()} {self.text}\n{content_str}"
 
     def findParent(self, level: int) -> Optional[Section]:
@@ -122,7 +122,7 @@ class Section(MdElement):
     def findAndChangeLine(self, old_line: str, new_line: str) -> Line | None:
         l = self.findLine(old_line)
         if l is None:
-            return None
+            return self.content.append(Line(text=new_line))
         index = self.content.index(l)
         self.content.remove(l)
         self.content.insert(index, Line(text=new_line))
